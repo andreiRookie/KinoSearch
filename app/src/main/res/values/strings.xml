@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">KinoSearch</string>
+    <string name="search_hint">Search</string>
+    <string name="error_group_load">Load</string>
+    <string name="error_group_try_again">Try again</string>
+    <string name="popular_button_text">Popular</string>
+    <string name="favorite_button_text">Favorite</string>
+</resources>
