@@ -4,4 +4,6 @@
     <dimen name="error_group_text_size_16sp">16sp</dimen>
     <dimen name="margin_8dp">8dp</dimen>
     <dimen name="margin_16dp">16dp</dimen>
+    <dimen name="margin_4dp">4dp</dimen>
+    <dimen name="search_block_height_48dp">48dp</dimen>
 </resources>

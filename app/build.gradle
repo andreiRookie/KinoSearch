@@ -49,9 +49,11 @@ dependencies {
 
     implementation deps.fragment
     implementation deps.recyclerview
-    implementation deps.swipe_refresh_layout
+    implementation deps.swipe_refresh
     implementation deps.viewmodel
     implementation deps.livedata
     implementation deps.dagger
     kapt deps.dagger_compiler
+
+    implementation deps.viewpager
 }

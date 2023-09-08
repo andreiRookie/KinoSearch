@@ -5,13 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.andreirookie.kinosearch.databinding.MovieItemBinding
+import com.andreirookie.kinosearch.databinding.MovieListItemLayoutBinding
 import com.andreirookie.kinosearch.models.Movie
 
 class MovieAdapter : ListAdapter<Movie, MovieViewHolder>(MovieDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = MovieItemBinding.inflate(inflater, parent, false)
+        val binding = MovieListItemLayoutBinding.inflate(inflater, parent, false)
         return MovieViewHolder(binding)
     }
 
@@ -22,15 +22,15 @@ class MovieAdapter : ListAdapter<Movie, MovieViewHolder>(MovieDiffCallback()) {
 }
 
 class MovieViewHolder(
-    private val binding: MovieItemBinding
+    private val binding: MovieListItemLayoutBinding
 ) : ViewHolder(binding.root) {
 
     fun bind(movie: Movie) {
         with(binding) {
             movieTitle.text = movie.title
             movieGenre.text = movie.genre
-            movieYear.text = movie.issueYear.toString()
-
+            movieYear.text = "(${movie.issueYear})"
+            likeIcon.isChecked = movie.isLiked
         }
     }
 }
