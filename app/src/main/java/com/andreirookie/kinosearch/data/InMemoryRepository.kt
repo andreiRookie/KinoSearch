@@ -1,13 +1,14 @@
 package com.andreirookie.kinosearch.data
 
 import com.andreirookie.kinosearch.models.Movie
+import javax.inject.Inject
 
 interface InMemoryRepository {
     suspend fun getPopMovies(): List<Movie>
     suspend fun getFavMovies(): List<Movie>
 }
 
-class InMemoryRepositoryImpl : InMemoryRepository {
+class InMemoryRepositoryImpl @Inject constructor() : InMemoryRepository {
 
     private val list = listOf(
         Movie(1, "Movie #1", genre = "Comedy", issueYear = 2001),

@@ -1,6 +1,7 @@
 package com.andreirookie.kinosearch.fragments.feed
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.andreirookie.kinosearch.data.InMemoryRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,5 +36,19 @@ class FeedFragViewModel(
         super.onCleared()
         viewModelJob.cancel()
     }
+
+//    companion object {
+//        fun Factory(inMemoryRepository: InMemoryRepository) = object : ViewModelProvider.Factory {
+//            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//                return when (modelClass) {
+//                    FeedFragViewModel::class.java -> {
+//                        FeedFragViewModel(inMemoryRepository) as T
+//                    } else -> {
+//                        error("Unknown $modelClass")
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
 

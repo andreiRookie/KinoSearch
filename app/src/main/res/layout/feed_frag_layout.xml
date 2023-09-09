@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/search_block_height_48dp"
         android:layout_margin="@dimen/margin_4dp"
-        android:background="@drawable/search_block_shape"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,8 +17,8 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
-        <ImageButton
-            android:id="@+id/search_button"
+        <ImageView
+            android:id="@+id/search_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -32,6 +31,8 @@
             android:layout_height="match_parent"
             android:layout_weight="9"
             android:hint="@string/search_hint"
+            android:maxLines="1"
+            android:inputType="text"
             android:textColor="@color/grey_300"
             android:textColorHint="@color/grey_100" />
     </LinearLayout>
