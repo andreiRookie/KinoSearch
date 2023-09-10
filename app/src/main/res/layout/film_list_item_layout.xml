@@ -14,18 +14,18 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/movie_image"
+            android:id="@+id/film_image"
             android:layout_width="160dp"
             android:layout_height="200dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/movie_title"
+            app:layout_constraintBottom_toTopOf="@id/film_title"
             android:src="@mipmap/ic_launcher"
             tools:srcCompat="@mipmap/ic_launcher" />
 
         <TextView
-            android:id="@+id/movie_title"
+            android:id="@+id/film_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -39,10 +39,10 @@
             android:layout_marginStart="@dimen/margin_8dp"
             android:layout_marginTop="@dimen/margin_4dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/movie_image"/>
+            app:layout_constraintTop_toBottomOf="@id/film_image"/>
 
         <TextView
-            android:id="@+id/movie_genre"
+            android:id="@+id/film_genre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -50,20 +50,20 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@id/movie_title"
-            app:layout_constraintTop_toBottomOf="@id/movie_title"
+            app:layout_constraintStart_toStartOf="@id/film_title"
+            app:layout_constraintTop_toBottomOf="@id/film_title"
             tools:text="Genre" />
 
         <TextView
-            android:id="@+id/movie_year"
+            android:id="@+id/film_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Year of issue"
             android:textSize="12sp"
             android:textColor="@color/black"
             android:layout_marginBottom="@dimen/margin_8dp"
-            app:layout_constraintStart_toStartOf="@id/movie_title"
-            app:layout_constraintTop_toBottomOf="@id/movie_genre"
+            app:layout_constraintStart_toStartOf="@id/film_title"
+            app:layout_constraintTop_toBottomOf="@id/film_genre"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
         <CheckBox
@@ -74,8 +74,8 @@
             android:checkable="true"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="@dimen/margin_8dp"
-            app:layout_constraintBottom_toBottomOf="@id/movie_year"
+            app:layout_constraintBottom_toBottomOf="@id/film_year"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/movie_genre" />
+            app:layout_constraintTop_toTopOf="@id/film_genre" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

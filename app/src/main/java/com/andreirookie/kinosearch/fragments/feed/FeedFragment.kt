@@ -55,7 +55,7 @@ class FeedFragment : Fragment() {
             viewPager = pager
             pagerAdapter = FeedPagerAdapter(childFragmentManager, lifecycle)
 
-            pagerAdapter.updateFragments(listOf(PopularMoviesFragment(), FavoriteMoviesFragment()))
+            pagerAdapter.updateFragments(listOf(PopularFilmsFragment(), FavoriteFilmsFragment()))
             viewPager.adapter = pagerAdapter
         }
 

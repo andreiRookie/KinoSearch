@@ -17,8 +17,8 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/movie_image"
-            android:background="@drawable/movie_image_shape"
+            android:id="@+id/film_image"
+            android:background="@drawable/film_image_shape"
             android:layout_width="88dp"
             android:layout_height="88dp"
             android:layout_marginStart="8dp"
@@ -30,7 +30,7 @@
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/movie_title"
+            android:id="@+id/film_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -44,11 +44,11 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@id/like_icon"
-            app:layout_constraintStart_toEndOf="@+id/movie_image"
+            app:layout_constraintStart_toEndOf="@+id/film_image"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/movie_genre"
+            android:id="@+id/film_genre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
@@ -60,10 +60,10 @@
             android:textColor="@color/black"
 
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/movie_title" />
+            app:layout_constraintStart_toStartOf="@+id/film_title" />
 
         <TextView
-            android:id="@+id/movie_year"
+            android:id="@+id/film_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -71,9 +71,9 @@
             android:textSize="16sp"
             android:textColor="@color/black"
 
-            app:layout_constraintBottom_toBottomOf="@+id/movie_genre"
-            app:layout_constraintStart_toEndOf="@+id/movie_genre"
-            app:layout_constraintTop_toTopOf="@+id/movie_genre" />
+            app:layout_constraintBottom_toBottomOf="@+id/film_genre"
+            app:layout_constraintStart_toEndOf="@+id/film_genre"
+            app:layout_constraintTop_toTopOf="@+id/film_genre" />
 
         <CheckBox
             android:id="@+id/like_icon"
@@ -83,8 +83,8 @@
             android:background="@android:color/transparent"
             android:button="@drawable/favorite_icon_style"
             android:checkable="true"
-            app:layout_constraintBottom_toBottomOf="@id/movie_title"
+            app:layout_constraintBottom_toBottomOf="@id/film_title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/movie_title" />
+            app:layout_constraintTop_toTopOf="@id/film_title" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

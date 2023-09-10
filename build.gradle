@@ -7,6 +7,9 @@ buildscript {
             'lifecycle'   : '2.6.0',
             'dagger'      : '2.48',
             'viewpager'   : '1.0.0',
+            'okhttp': '4.10.0',
+            'retrofit': '2.9.0',
+            'moshi': '1.14.0'
     ]
 
     ext.deps = [
@@ -18,6 +21,14 @@ buildscript {
             'dagger'         : "com.google.dagger:dagger:${versions.dagger}",
             'dagger_compiler': "com.google.dagger:dagger-compiler:${versions.dagger}",
             'viewpager'      : "androidx.viewpager2:viewpager2:${versions.viewpager}",
+
+            'okhhtp': "com.squareup.okhttp3:okhttp:${versions.okhttp}",
+            'okhhtp_logging_intercepter': "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}",
+
+            'retrofit': "com.squareup.retrofit2:retrofit:${versions.retrofit}",
+            'retrofit_moshi_converter': "com.squareup.retrofit2:converter-moshi:${versions.retrofit}",
+
+            'moshi': "com.squareup.moshi:moshi-kotlin-codegen:${versions.moshi}"
     ]
 
 }

@@ -1,8 +1,7 @@
 package com.andreirookie.kinosearch.fragments.feed
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.andreirookie.kinosearch.data.InMemoryRepository
+import com.andreirookie.kinosearch.data.cache.InMemoryRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,15 +19,15 @@ class FeedFragViewModel(
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate + viewModelJob)
 
-    fun getPopMovies() {
+    fun getPopFilms() {
         viewModelScope.launch {
-            _feedState.value = FeedFragState.TopMovies(repository.getPopMovies())
+            _feedState.value = FeedFragState.TopFilms(repository.getPopFilms())
         }
     }
 
-    fun getFavMovies() {
+    fun getFavFilms() {
         viewModelScope.launch {
-            _feedState.value = FeedFragState.FavoriteMovies(repository.getFavMovies())
+            _feedState.value = FeedFragState.FavoriteFilms(repository.getFavFilms())
         }
     }
 

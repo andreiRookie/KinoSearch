@@ -1,8 +1,8 @@
 package com.andreirookie.kinosearch.di
 
 import android.content.Context
-import com.andreirookie.kinosearch.data.InMemoryRepository
-import com.andreirookie.kinosearch.data.InMemoryRepositoryImpl
+import com.andreirookie.kinosearch.data.cache.InMemoryRepository
+import com.andreirookie.kinosearch.data.cache.InMemoryRepositoryImpl
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component

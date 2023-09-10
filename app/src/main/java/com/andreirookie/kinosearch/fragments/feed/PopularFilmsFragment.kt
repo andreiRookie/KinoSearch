@@ -13,19 +13,19 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.andreirookie.kinosearch.R
 import com.andreirookie.kinosearch.databinding.FeedFragPagerLayoutBinding
 import com.andreirookie.kinosearch.di.ActivityComponentHolder
-import com.andreirookie.kinosearch.di.FavoriteMoviesFragComponent
 import com.andreirookie.kinosearch.di.FeedFragViewModelFactory
+import com.andreirookie.kinosearch.di.PopularFilmsFragComponent
 import com.andreirookie.kinosearch.di.appComponent
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class FavoriteMoviesFragment : Fragment() {
+class PopularFilmsFragment : Fragment() {
 
     private var _binding: FeedFragPagerLayoutBinding? = null
     private val binding: FeedFragPagerLayoutBinding get() = _binding!!
 
-    private var _adapter: MovieAdapter? = null
-    private val adapter: MovieAdapter get() = _adapter!!
+    private var _adapter: FilmAdapter? = null
+    private val adapter: FilmAdapter get() = _adapter!!
 
     @Inject
     lateinit var vmFactory: FeedFragViewModelFactory
@@ -33,7 +33,7 @@ class FavoriteMoviesFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        FavoriteMoviesFragComponent
+        PopularFilmsFragComponent
             .getComponent(ActivityComponentHolder.getComponent(context.appComponent))
             .inject(this)
     }
@@ -43,7 +43,7 @@ class FavoriteMoviesFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _adapter = MovieAdapter()
+        _adapter = FilmAdapter()
         _binding = FeedFragPagerLayoutBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -54,6 +54,7 @@ class FavoriteMoviesFragment : Fragment() {
         with(binding) {
             recyclerView.adapter = adapter
 
+
             swipeRefreshLayout.apply {
                 setColorSchemeColors(view.context.getColor(R.color.blue_200))
                 setOnRefreshListener {
@@ -63,7 +64,8 @@ class FavoriteMoviesFragment : Fragment() {
             }
         }
 
-        viewModel.getFavMovies()
+        viewModel.getPopFilms()
+
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.feedState.collect { state ->
@@ -78,10 +80,11 @@ class FavoriteMoviesFragment : Fragment() {
             is FeedFragState.Init -> {}
             is FeedFragState.Error -> {}
             is FeedFragState.Loading -> {}
-            is FeedFragState.TopMovies -> {}
-            is FeedFragState.FavoriteMovies -> {
-                adapter.submitList(state.favMovies)
+            is FeedFragState.TopFilms -> {
+                adapter.submitList(state.popFilms)
             }
+
+            is FeedFragState.FavoriteFilms -> {}
         }
     }
 

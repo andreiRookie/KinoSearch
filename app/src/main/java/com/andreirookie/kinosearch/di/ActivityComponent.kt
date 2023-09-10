@@ -3,7 +3,7 @@ package com.andreirookie.kinosearch.di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.andreirookie.kinosearch.MainActivity
-import com.andreirookie.kinosearch.data.InMemoryRepository
+import com.andreirookie.kinosearch.data.cache.InMemoryRepository
 import com.andreirookie.kinosearch.fragments.feed.FeedFragViewModel
 import dagger.Component
 import dagger.Module
@@ -48,6 +48,7 @@ object ActivityModule {
 
 }
 
+@Suppress("UNCHECKED_CAST")
 class FeedFragViewModelFactory @Inject constructor(
     private val inMemoryRepository: InMemoryRepository
 ) : ViewModelProvider.Factory {

@@ -8,6 +8,8 @@ android {
     namespace 'com.andreirookie.kinosearch'
     compileSdk 33
 
+    def  localProperties= new Properties()
+
     defaultConfig {
         applicationId "com.andreirookie.kinosearch"
         minSdk 28
@@ -16,9 +18,16 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+
+        localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+        manifestPlaceholders = [kinopoiskApiKey: "${localProperties.getProperty('X_API_KEY')}"]
     }
 
     buildTypes {
+        debug {
+            resValue("string", "X_API_KEY", localProperties['X_API_KEY'])
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -56,4 +65,11 @@ dependencies {
     kapt deps.dagger_compiler
 
     implementation deps.viewpager
+
+    implementation deps.okhhtp
+    implementation deps.okhhtp_logging_intercepter
+
+    implementation deps.retrofit
+    implementation deps.retrofit_moshi_converter
+    kapt deps.moshi
 }

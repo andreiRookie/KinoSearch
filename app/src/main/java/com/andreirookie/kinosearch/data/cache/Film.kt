@@ -1,6 +1,6 @@
-package com.andreirookie.kinosearch.models
+package com.andreirookie.kinosearch.data.cache
 
-data class Movie(
+data class Film(
     val id: Int,
     val title: String,
     val posterUrl: String = "",

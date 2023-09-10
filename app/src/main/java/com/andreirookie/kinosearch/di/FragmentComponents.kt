@@ -1,8 +1,8 @@
 package com.andreirookie.kinosearch.di
 
-import com.andreirookie.kinosearch.fragments.feed.FavoriteMoviesFragment
+import com.andreirookie.kinosearch.fragments.feed.FavoriteFilmsFragment
 import com.andreirookie.kinosearch.fragments.feed.FeedFragment
-import com.andreirookie.kinosearch.fragments.feed.PopularMoviesFragment
+import com.andreirookie.kinosearch.fragments.feed.PopularFilmsFragment
 import dagger.Component
 import javax.inject.Scope
 
@@ -25,34 +25,34 @@ interface FeedFragComponent {
 
 @FragmentScope
 @Component(dependencies = [ActivityComponent::class])
-interface FavoriteMoviesFragComponent {
-    fun inject(fragment: FavoriteMoviesFragment)
+interface FavoriteFilmsFragComponent {
+    fun inject(fragment: FavoriteFilmsFragment)
 
     @Component.Factory
-    interface FavoriteMoviesFragComponentFactory {
-        fun create(activityComponent: ActivityComponent): FavoriteMoviesFragComponent
+    interface FavoriteFilmsFragComponentFactory {
+        fun create(activityComponent: ActivityComponent): FavoriteFilmsFragComponent
     }
 
     companion object {
-        fun getComponent(activityComponent: ActivityComponent): FavoriteMoviesFragComponent {
-            return DaggerFavoriteMoviesFragComponent.factory().create(activityComponent)
+        fun getComponent(activityComponent: ActivityComponent): FavoriteFilmsFragComponent {
+            return DaggerFavoriteFilmsFragComponent.factory().create(activityComponent)
         }
     }
 }
 
 @FragmentScope
 @Component(dependencies = [ActivityComponent::class])
-interface PopularMoviesFragComponent {
-    fun inject(fragment: PopularMoviesFragment)
+interface PopularFilmsFragComponent {
+    fun inject(fragment: PopularFilmsFragment)
 
     @Component.Factory
-    interface PopularMoviesFragComponentFactory {
-        fun create(activityComponent: ActivityComponent): PopularMoviesFragComponent
+    interface PopularFilmsFragComponentFactory {
+        fun create(activityComponent: ActivityComponent): PopularFilmsFragComponent
     }
 
     companion object {
-        fun getComponent(activityComponent: ActivityComponent): PopularMoviesFragComponent {
-            return DaggerPopularMoviesFragComponent.factory().create(activityComponent)
+        fun getComponent(activityComponent: ActivityComponent): PopularFilmsFragComponent {
+            return DaggerPopularFilmsFragComponent.factory().create(activityComponent)
         }
     }
 }
