@@ -3,12 +3,14 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
 }
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+localProperties.load(localPropertiesFile.newDataInputStream())
 
 android {
     namespace 'com.andreirookie.kinosearch'
     compileSdk 33
 
-    def  localProperties= new Properties()
 
     defaultConfig {
         applicationId "com.andreirookie.kinosearch"
@@ -19,15 +21,25 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+//        to <meta-data>:
+//        manifestPlaceholders = [kinopoiskApiKey: "${localProperties.getProperty('X_API_KEY')}"]
+//        <meta-data
+//        android:name="kinopoisk.api.key"
+//        android:value="${kinopoiskApiKey}" />
 
-        localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-        manifestPlaceholders = [kinopoiskApiKey: "${localProperties.getProperty('X_API_KEY')}"]
+//        to BuildConfig
+        buildConfigField("String", "API_KEY", localProperties.getProperty('X_API_KEY'))
+
     }
 
     buildTypes {
-        debug {
-            resValue("string", "X_API_KEY", localProperties['X_API_KEY'])
-        }
+
+//        to gradleResValues.xml:
+//        debug {
+//            resValue("string", "X_API_KEY", localProperties['X_API_KEY'])
+//        }
+//        resources.getString(R.string.X_API_KEY)
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -43,6 +55,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 

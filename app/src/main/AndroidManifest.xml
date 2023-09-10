@@ -13,11 +13,6 @@
         android:theme="@style/Theme.KinoSearch"
         tools:targetApi="31"
         android:name=".di.KinoSearchApp">
-
-        <meta-data
-            android:name="kinopoisk.api.key"
-            android:value="${kinopoiskApiKey}" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
