@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.andreirookie.kinosearch.MainActivity
 import com.andreirookie.kinosearch.data.cache.InMemoryRepository
+import com.andreirookie.kinosearch.data.net.NetworkRepository
 import com.andreirookie.kinosearch.fragments.feed.FeedFragViewModel
 import dagger.Component
 import dagger.Module
@@ -16,6 +17,7 @@ import javax.inject.Scope
 interface ActivityComponent {
 
     fun provideInMemoryRepository(): InMemoryRepository
+    fun provideNetworkRepository(): NetworkRepository
     fun inject(activity: MainActivity)
 
     @Component.Factory
@@ -40,9 +42,10 @@ object ActivityModule {
     @ActivityScope
     @Provides
     fun provideFeedFragViewModelFactory(
-        inMemoryRepository: InMemoryRepository
+        inMemoryRepo: InMemoryRepository,
+        networkRepo: NetworkRepository
     ): FeedFragViewModelFactory {
-        return FeedFragViewModelFactory(inMemoryRepository)
+        return FeedFragViewModelFactory(inMemoryRepo, networkRepo)
     }
 
 
@@ -50,13 +53,14 @@ object ActivityModule {
 
 @Suppress("UNCHECKED_CAST")
 class FeedFragViewModelFactory @Inject constructor(
-    private val inMemoryRepository: InMemoryRepository
+    private val inMemoryRepo: InMemoryRepository,
+    private val networkRepo: NetworkRepository
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
             FeedFragViewModel::class.java -> {
-                FeedFragViewModel(inMemoryRepository) as T
+                FeedFragViewModel(inMemoryRepo, networkRepo) as T
             }
             else -> {
                 error("Unknown $modelClass")

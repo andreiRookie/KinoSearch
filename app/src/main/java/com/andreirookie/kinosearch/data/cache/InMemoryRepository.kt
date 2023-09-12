@@ -1,5 +1,6 @@
 package com.andreirookie.kinosearch.data.cache
 
+import com.andreirookie.kinosearch.data.models.Film
 import javax.inject.Inject
 
 interface InMemoryRepository {
@@ -25,5 +26,4 @@ class InMemoryRepositoryImpl @Inject constructor() : InMemoryRepository {
     override suspend fun getFavFilms(): List<Film> {
         return list.filter { film -> film.isLiked }
     }
-
 }

@@ -5,8 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.andreirookie.kinosearch.data.cache.Film
+import com.andreirookie.kinosearch.data.models.Film
 import com.andreirookie.kinosearch.databinding.FilmListItemLayoutBinding
+import com.bumptech.glide.Glide
 
 class FilmAdapter : ListAdapter<Film, FilmViewHolder>(FilmDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmViewHolder {
@@ -31,6 +32,10 @@ class FilmViewHolder(
             filmGenre.text = film.genre
             filmYear.text = "(${film.issueYear})"
             likeIcon.isChecked = film.isLiked
+
+            Glide.with(root.context)
+                .load(film.posterUrlPreview)
+                .into(filmImage)
         }
     }
 }

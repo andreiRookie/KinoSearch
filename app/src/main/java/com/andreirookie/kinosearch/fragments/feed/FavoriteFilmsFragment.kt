@@ -78,7 +78,7 @@ class FavoriteFilmsFragment : Fragment() {
             is FeedFragState.Init -> {}
             is FeedFragState.Error -> {}
             is FeedFragState.Loading -> {}
-            is FeedFragState.TopFilms -> {}
+            is FeedFragState.PopularFilms -> {}
             is FeedFragState.FavoriteFilms -> {
                 adapter.submitList(state.favFilms)
             }

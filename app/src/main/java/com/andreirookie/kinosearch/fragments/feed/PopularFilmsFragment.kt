@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -50,21 +51,24 @@ class PopularFilmsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+// todo pagination
         with(binding) {
             recyclerView.adapter = adapter
-
 
             swipeRefreshLayout.apply {
                 setColorSchemeColors(view.context.getColor(R.color.blue_200))
                 setOnRefreshListener {
-
+                    viewModel.loadPopFilms()
                     isRefreshing = false
                 }
             }
+
+            retryButton.setOnClickListener {
+                viewModel.loadPopFilms()
+            }
         }
 
-        viewModel.getPopFilms()
+        viewModel.loadPopFilms()
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -77,11 +81,30 @@ class PopularFilmsFragment : Fragment() {
 
     private fun render(state: FeedFragState) {
         when (state) {
-            is FeedFragState.Init -> {}
-            is FeedFragState.Error -> {}
-            is FeedFragState.Loading -> {}
-            is FeedFragState.TopFilms -> {
+            is FeedFragState.Init -> {
+                binding.apply {
+                    progressBar.isVisible = false
+                    errorGroup.isVisible = false
+                }
+            }
+            is FeedFragState.Error -> {
+                binding.apply {
+                    progressBar.isVisible = false
+                    errorGroup.isVisible = true
+                }
+            }
+            is FeedFragState.Loading -> {
+                binding.apply {
+                    progressBar.isVisible = true
+                    errorGroup.isVisible = false
+                }
+            }
+            is FeedFragState.PopularFilms -> {
                 adapter.submitList(state.popFilms)
+                binding.apply {
+                    progressBar.isVisible = false
+                    errorGroup.isVisible = false
+                }
             }
 
             is FeedFragState.FavoriteFilms -> {}

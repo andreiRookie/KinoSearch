@@ -9,7 +9,8 @@ buildscript {
             'viewpager'   : '1.0.0',
             'okhttp': '4.10.0',
             'retrofit': '2.9.0',
-            'moshi': '1.14.0'
+            'moshi': '1.14.0',
+            'glide': '4.12.0'
     ]
 
     ext.deps = [
@@ -28,7 +29,9 @@ buildscript {
             'retrofit': "com.squareup.retrofit2:retrofit:${versions.retrofit}",
             'retrofit_moshi_converter': "com.squareup.retrofit2:converter-moshi:${versions.retrofit}",
 
-            'moshi': "com.squareup.moshi:moshi-kotlin-codegen:${versions.moshi}"
+            'moshi': "com.squareup.moshi:moshi-kotlin-codegen:${versions.moshi}",
+
+            'glide': "com.github.bumptech.glide:glide:${versions.glide}"
     ]
 
 }
