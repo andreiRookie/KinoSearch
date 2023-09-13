@@ -1,6 +1,7 @@
 package com.andreirookie.kinosearch.di
 
 import com.andreirookie.kinosearch.data.net.ApiService
+import com.andreirookie.kinosearch.data.net.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -15,13 +16,14 @@ import javax.inject.Singleton
 object NetworkModule {
     private const val BASE_URL = "https://kinopoiskapiunofficial.tech"
 
-// TODO Interceptor w apikey?
+    @Provides
+    fun provideAuthInterceptor():  AuthInterceptor =  AuthInterceptor()
 
     @Reusable
     @Provides
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(interceptor: AuthInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
-//            .addNetworkInterceptor(interceptor)
+            .addNetworkInterceptor(interceptor)
             .build()
     }
 
