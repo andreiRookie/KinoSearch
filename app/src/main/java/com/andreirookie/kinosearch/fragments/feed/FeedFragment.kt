@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.andreirookie.kinosearch.databinding.FeedFragLayoutBinding
@@ -36,6 +37,10 @@ class FeedFragment : Fragment() {
         FeedFragComponent
             .getComponent(ActivityComponentHolder.getComponent(context.appComponent))
             .inject(this)
+
+        parentFragmentManager.commit {
+            setPrimaryNavigationFragment(this@FeedFragment)
+        }
     }
 
     override fun onCreateView(
@@ -64,13 +69,13 @@ class FeedFragment : Fragment() {
         }.attach()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 
     companion object {
         const val TAG = "FeedFragment"
-        private val tabs = listOf("Popular", "Favorite")
+        private val tabs = listOf(PopularFilmsFragment.TAB_TAG, FavoriteFilmsFragment.TAB_TAG)
     }
 }

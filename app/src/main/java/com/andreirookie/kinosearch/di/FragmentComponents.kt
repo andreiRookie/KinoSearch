@@ -3,6 +3,7 @@ package com.andreirookie.kinosearch.di
 import com.andreirookie.kinosearch.fragments.feed.FavoriteFilmsFragment
 import com.andreirookie.kinosearch.fragments.feed.FeedFragment
 import com.andreirookie.kinosearch.fragments.feed.PopularFilmsFragment
+import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragment
 import dagger.Component
 import javax.inject.Scope
 
@@ -53,6 +54,23 @@ interface PopularFilmsFragComponent {
     companion object {
         fun getComponent(activityComponent: ActivityComponent): PopularFilmsFragComponent {
             return DaggerPopularFilmsFragComponent.factory().create(activityComponent)
+        }
+    }
+}
+
+@FragmentScope
+@Component(dependencies = [ActivityComponent::class])
+interface FilmDetailsFragComponent {
+    fun inject(fragment: FilmDetailsFragment)
+
+    @Component.Factory
+    interface FilmDetailsFragComponentFactory {
+        fun create(activityComponent: ActivityComponent): FilmDetailsFragComponent
+    }
+
+    companion object {
+        fun getComponent(activityComponent: ActivityComponent): FilmDetailsFragComponent {
+            return DaggerFilmDetailsFragComponent.factory().create(activityComponent)
         }
     }
 }

@@ -16,6 +16,7 @@ import com.andreirookie.kinosearch.di.ActivityComponentHolder
 import com.andreirookie.kinosearch.di.FavoriteFilmsFragComponent
 import com.andreirookie.kinosearch.di.FeedFragViewModelFactory
 import com.andreirookie.kinosearch.di.appComponent
+import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragment
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,7 +44,11 @@ class FavoriteFilmsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _adapter = FilmAdapter()
+        _adapter = FilmAdapter( object : FilmCardInterActionListener {
+            override fun onCardClick(id: Int) {
+                viewModel.goToFilmDetailsFrag(id)
+            }
+        })
         _binding = FeedFragPagerLayoutBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -57,19 +62,33 @@ class FavoriteFilmsFragment : Fragment() {
             swipeRefreshLayout.apply {
                 setColorSchemeColors(view.context.getColor(R.color.blue_200))
                 setOnRefreshListener {
-
+                    viewModel.getFavFilms()
                     isRefreshing = false
                 }
+            }
+
+            retryButton.setOnClickListener {
+                viewModel.getFavFilms()
             }
         }
 
         viewModel.getFavFilms()
+
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.feedState.collect { state ->
                     render(state)
                 }
             }
+        }
+
+        viewModel.navigateToFilmDetailsFrag.observe(viewLifecycleOwner) { id ->
+            val frag = FilmDetailsFragment.getInstance(id)
+            parentFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.feed_fragment_container, frag)
+                .addToBackStack(FilmDetailsFragment.TAG)
+                .commit()
         }
     }
 
@@ -85,9 +104,13 @@ class FavoriteFilmsFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
         _adapter = null
+    }
+
+    companion object {
+        const val TAB_TAG = "Favorite"
     }
 }

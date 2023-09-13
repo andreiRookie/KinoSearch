@@ -17,6 +17,7 @@ import com.andreirookie.kinosearch.di.ActivityComponentHolder
 import com.andreirookie.kinosearch.di.FeedFragViewModelFactory
 import com.andreirookie.kinosearch.di.PopularFilmsFragComponent
 import com.andreirookie.kinosearch.di.appComponent
+import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragment
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,7 +45,11 @@ class PopularFilmsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _adapter = FilmAdapter()
+        _adapter = FilmAdapter( object : FilmCardInterActionListener {
+            override fun onCardClick(id: Int) {
+                viewModel.goToFilmDetailsFrag(id)
+            }
+        })
         _binding = FeedFragPagerLayoutBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -77,6 +82,15 @@ class PopularFilmsFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.navigateToFilmDetailsFrag.observe(viewLifecycleOwner) { id ->
+            val frag = FilmDetailsFragment.getInstance(id)
+            parentFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.feed_fragment_container, frag)
+                .addToBackStack(FilmDetailsFragment.TAG)
+                .commit()
+        }
     }
 
     private fun render(state: FeedFragState) {
@@ -106,14 +120,17 @@ class PopularFilmsFragment : Fragment() {
                     errorGroup.isVisible = false
                 }
             }
-
             is FeedFragState.FavoriteFilms -> {}
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
         _adapter = null
+    }
+
+    companion object {
+        const val TAB_TAG = "Popular"
     }
 }

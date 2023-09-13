@@ -5,10 +5,10 @@ data class Film(
     val title: String,
     val posterUrl: String = "",
     val posterUrlPreview: String = "",
-    val issueYear: Int = 0,
+    val issueYear: String = "",
     val genre: String = "",
     val country: String = "",
+    val filmLength: String = "",
     val description: String = "",
-    val shortDescription: String = "",
     val isLiked: Boolean = false
 )
