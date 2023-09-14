@@ -18,6 +18,9 @@ import com.andreirookie.kinosearch.di.FeedFragViewModelFactory
 import com.andreirookie.kinosearch.di.PopularFilmsFragComponent
 import com.andreirookie.kinosearch.di.appComponent
 import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragment
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,6 +36,8 @@ class PopularFilmsFragment : Fragment() {
     lateinit var vmFactory: FeedFragViewModelFactory
     private val viewModel: FeedFragViewModel by viewModels { vmFactory }
 
+    private var vmJob: Job? = null
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         PopularFilmsFragComponent
@@ -47,11 +52,27 @@ class PopularFilmsFragment : Fragment() {
     ): View {
         _adapter = FilmAdapter( object : FilmCardInterActionListener {
             override fun onCardClick(id: Int) {
-                viewModel.goToFilmDetailsFrag(id)
+                viewModel.navigateToFilmDetailsFrag(id)
             }
         })
         _binding = FeedFragPagerLayoutBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vmJob = viewModel.eventsFlow.onEach {
+            when (it) {
+                is FeedFragViewModel.Event.NavigateToFilmFragDetails -> {
+                    val frag = FilmDetailsFragment.getInstance(it.id)
+                    parentFragmentManager.beginTransaction()
+                        .setReorderingAllowed(true)
+                        .add(R.id.feed_fragment_container, frag)
+                        .addToBackStack(FilmDetailsFragment.TAG)
+                        .commit()
+                }
+            }
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,15 +102,6 @@ class PopularFilmsFragment : Fragment() {
                     render(state)
                 }
             }
-        }
-
-        viewModel.navigateToFilmDetailsFrag.observe(viewLifecycleOwner) { id ->
-            val frag = FilmDetailsFragment.getInstance(id)
-            parentFragmentManager.beginTransaction()
-                .setReorderingAllowed(true)
-                .add(R.id.feed_fragment_container, frag)
-                .addToBackStack(FilmDetailsFragment.TAG)
-                .commit()
         }
     }
 
@@ -122,6 +134,11 @@ class PopularFilmsFragment : Fragment() {
             }
             is FeedFragState.FavoriteFilms -> {}
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vmJob?.cancel()
     }
 
     override fun onDestroyView() {

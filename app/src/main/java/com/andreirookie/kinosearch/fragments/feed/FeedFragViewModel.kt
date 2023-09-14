@@ -3,15 +3,16 @@ package com.andreirookie.kinosearch.fragments.feed
 import androidx.lifecycle.ViewModel
 import com.andreirookie.kinosearch.data.cache.InMemoryRepository
 import com.andreirookie.kinosearch.data.net.NetworkRepository
-import com.andreirookie.kinosearch.fragments.film.SingleLiveEvent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class FeedFragViewModel(
     private val inMemoryRepo: InMemoryRepository,
@@ -23,6 +24,15 @@ class FeedFragViewModel(
 
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate + viewModelJob)
+
+    private val eventsChannel = Channel<Event>(Channel.BUFFERED)
+    val eventsFlow: Flow<Event> = eventsChannel.receiveAsFlow()
+
+    fun navigateToFilmDetailsFrag(id: Int) {
+        viewModelScope.launch {
+            eventsChannel.send(Event.NavigateToFilmFragDetails(id))
+        }
+    }
 
     fun loadPopFilms() {
         _feedState.value =
@@ -40,11 +50,6 @@ class FeedFragViewModel(
         }
     }
 
-    val navigateToFilmDetailsFrag = SingleLiveEvent<Int>()
-    fun goToFilmDetailsFrag(id: Int) {
-        navigateToFilmDetailsFrag.value = id
-    }
-
     fun getPopFilms() {
         viewModelScope.launch {
             _feedState.value = FeedFragState.PopularFilms(inMemoryRepo.getPopFilms())
@@ -60,6 +65,10 @@ class FeedFragViewModel(
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
+    }
+
+    sealed interface Event {
+        data class NavigateToFilmFragDetails(val id: Int) : Event
     }
 }
 

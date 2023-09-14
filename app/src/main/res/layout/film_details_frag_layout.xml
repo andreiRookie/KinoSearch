@@ -6,17 +6,18 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+<!--     todo button anim-->
     <ImageButton
         android:id="@+id/go_back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="28dp"
         android:layout_marginTop="32dp"
         android:background="@android:color/transparent"
         android:elevation="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_arrow_back_24"
+        app:srcCompat="@drawable/ic_arrow_back_36"
         app:tint="@color/blue_500" />
 
     <ScrollView
@@ -55,8 +56,6 @@
                 android:textColor="@color/black"
                 android:textSize="24sp"
                 tools:text="film_title" />
-
-            <!--TODO text appearance style-->
 
             <TextView
                 android:id="@+id/the_film_description"
