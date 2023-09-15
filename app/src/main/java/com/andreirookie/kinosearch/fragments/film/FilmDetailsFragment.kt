@@ -91,13 +91,13 @@ class FilmDetailsFragment : Fragment() {
                     theFilmDetailsProgressBar.isVisible = false
                     theFilmDetailsErrorGroup.isVisible = false
 
-                    Glide.with(root.context).load(state.filmInfo.film.posterUrl)
+                    Glide.with(root.context).load(state.filmInfo.filmDetails.posterUrl)
                         .into(binding.theFilmPosterImage)
 
-                    theFilmTitle.text = state.filmInfo.film.title
-                    theFilmDescription.text = state.filmInfo.film.description
-                    theFilmCountry.text = state.filmInfo.film.country
-                    theFilmLength.text = state.filmInfo.film.filmLength
+                    theFilmTitle.text = state.filmInfo.filmDetails.title
+                    theFilmDescription.text = state.filmInfo.filmDetails.description
+                    theFilmCountry.text = state.filmInfo.filmDetails.country
+                    theFilmLength.text = state.filmInfo.filmDetails.filmLength
 
                     theFilmDirector.text = getString(
                         R.string.film_director, state.filmInfo.director

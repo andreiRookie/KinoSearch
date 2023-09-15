@@ -4,27 +4,28 @@ import com.andreirookie.kinosearch.data.mapper.Mapper
 import com.andreirookie.kinosearch.data.models.FilmDetailsNetModel
 import com.andreirookie.kinosearch.data.models.FilmNetModel
 import com.andreirookie.kinosearch.data.models.StaffNetModel
-import com.andreirookie.kinosearch.domain.Film
+import com.andreirookie.kinosearch.domain.FilmDetailsModel
+import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.andreirookie.kinosearch.domain.Staff
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface NetworkRepository {
-    suspend fun loadPopularFilms(): List<Film>
-    suspend fun loadFilmById(filmId: Int): Film
+    suspend fun loadPopularFilms(): List<FilmFeedModel>
+    suspend fun loadFilmById(filmId: Int): FilmDetailsModel
     suspend fun loadStaffByFilmId(id: Int): List<Staff>
 }
 
 class NetworkRepositoryImpl @Inject constructor(
     private val service: ApiService,
     private val dispatcher: CoroutineDispatcher,
-    private val mapperFilms: Mapper<FilmNetModel, Film>,
-    private val mapperFilmDetails: Mapper<FilmDetailsNetModel, Film>,
+    private val mapperFilms: Mapper<FilmNetModel, FilmFeedModel>,
+    private val mapperFilmDetailsFeedModel: Mapper<FilmDetailsNetModel, FilmDetailsModel>,
     private val mapperFilmStaff: Mapper<StaffNetModel, Staff>
 ) : NetworkRepository {
 
-    override suspend fun loadPopularFilms(): List<Film> {
+    override suspend fun loadPopularFilms(): List<FilmFeedModel> {
         return withContext(dispatcher) {
             service.getTopFilms().let {
                 mapperFilms.mapFromEntityList(it.films)
@@ -32,10 +33,10 @@ class NetworkRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadFilmById(filmId: Int): Film {
+    override suspend fun loadFilmById(filmId: Int): FilmDetailsModel {
         return withContext(dispatcher) {
             service.getFilmById(filmId).let {
-                mapperFilmDetails.mapFromEntity(it)
+                mapperFilmDetailsFeedModel.mapFromEntity(it)
             }
         }
     }

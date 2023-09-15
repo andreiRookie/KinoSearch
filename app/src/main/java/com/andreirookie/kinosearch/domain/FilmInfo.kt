@@ -1,7 +1,7 @@
 package com.andreirookie.kinosearch.domain
 
 data class FilmInfo(
-    val film: Film,
+    val filmDetails: FilmDetailsModel,
     val director: String,
     val actors: String
 )

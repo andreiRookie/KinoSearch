@@ -2,15 +2,15 @@ package com.andreirookie.kinosearch.fragments.feed
 
 import androidx.recyclerview.widget.RecyclerView
 import com.andreirookie.kinosearch.databinding.FilmListItemLayoutBinding
-import com.andreirookie.kinosearch.domain.Film
+import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.bumptech.glide.Glide
 
 class FilmViewHolder(
     private val binding: FilmListItemLayoutBinding,
-    private val listener: FilmCardInterActionListener
+    private val listener: FilmCardInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(film: Film) {
+    fun bind(film: FilmFeedModel) {
         with(binding) {
             filmTitle.text = film.title
             filmGenre.text = film.genre
@@ -27,6 +27,6 @@ class FilmViewHolder(
         }
     }
 }
-interface FilmCardInterActionListener {
+interface FilmCardInteractionListener {
     fun onCardClick(id: Int)
 }

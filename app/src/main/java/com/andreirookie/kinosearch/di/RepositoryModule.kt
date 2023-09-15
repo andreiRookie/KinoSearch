@@ -11,7 +11,8 @@ import com.andreirookie.kinosearch.data.models.FilmNetModel
 import com.andreirookie.kinosearch.data.models.StaffNetModel
 import com.andreirookie.kinosearch.data.net.NetworkRepository
 import com.andreirookie.kinosearch.data.net.NetworkRepositoryImpl
-import com.andreirookie.kinosearch.domain.Film
+import com.andreirookie.kinosearch.domain.FilmDetailsModel
+import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.andreirookie.kinosearch.domain.Staff
 import dagger.Binds
 import dagger.Module
@@ -29,10 +30,10 @@ interface RepositoryModule {
     fun bindNetworkRepository(impl: NetworkRepositoryImpl): NetworkRepository
 
     @Binds
-    fun bindFilmMapper(impl: FilmMapperImpl): Mapper<FilmNetModel, Film>
+    fun bindFilmMapper(impl: FilmMapperImpl): Mapper<FilmNetModel, FilmFeedModel>
 
     @Binds
-    fun bindFilmDetailsMapper(impl: FilmDetailsMapperImpl): Mapper<FilmDetailsNetModel, Film>
+    fun bindFilmDetailsMapper(impl: FilmDetailsMapperImpl): Mapper<FilmDetailsNetModel, FilmDetailsModel>
 
     @Binds
     fun bindFilmStaffMapper(impl: FilmStaffMapper): Mapper<StaffNetModel, Staff>

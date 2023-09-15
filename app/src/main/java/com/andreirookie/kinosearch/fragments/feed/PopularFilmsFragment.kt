@@ -50,7 +50,7 @@ class PopularFilmsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _adapter = FilmAdapter( object : FilmCardInterActionListener {
+        _adapter = FilmAdapter( object : FilmCardInteractionListener {
             override fun onCardClick(id: Int) {
                 viewModel.navigateToFilmDetailsFrag(id)
             }

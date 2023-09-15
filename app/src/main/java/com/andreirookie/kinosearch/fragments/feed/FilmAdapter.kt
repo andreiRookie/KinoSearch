@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.andreirookie.kinosearch.domain.Film
+import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.andreirookie.kinosearch.databinding.FilmListItemLayoutBinding
 
 class FilmAdapter(
-    private val listener: FilmCardInterActionListener
-) : ListAdapter<Film, FilmViewHolder>(FilmDiffCallback()) {
+    private val listener: FilmCardInteractionListener
+) : ListAdapter<FilmFeedModel, FilmViewHolder>(FilmDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = FilmListItemLayoutBinding.inflate(inflater, parent, false)
@@ -22,11 +22,11 @@ class FilmAdapter(
     }
 }
 
-class FilmDiffCallback : DiffUtil.ItemCallback<Film>() {
-    override fun areItemsTheSame(oldItem: Film, newItem: Film): Boolean {
+class FilmDiffCallback : DiffUtil.ItemCallback<FilmFeedModel>() {
+    override fun areItemsTheSame(oldItem: FilmFeedModel, newItem: FilmFeedModel): Boolean {
         return oldItem.id == newItem.id
     }
-    override fun areContentsTheSame(oldItem: Film, newItem: Film): Boolean {
+    override fun areContentsTheSame(oldItem: FilmFeedModel, newItem: FilmFeedModel): Boolean {
         return oldItem == newItem
     }
 }

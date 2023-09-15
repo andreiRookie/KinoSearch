@@ -87,4 +87,8 @@ dependencies {
     kapt deps.moshi
 
     implementation deps.glide
+
+    implementation deps.room.runtime
+    implementation deps.room.ktx
+    kapt deps.room.compiler
 }
