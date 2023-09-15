@@ -68,10 +68,28 @@
                 tools:text="description" />
 
             <TextView
+                android:id="@+id/the_film_director"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:textColor="@color/black"
+                android:text="@string/film_director"
+                tools:text="film_director" />
+
+            <TextView
+                android:id="@+id/the_film_cast"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:textColor="@color/black"
+                android:text="@string/film_cast"
+                tools:text="film_cast" />
+
+            <TextView
                 android:id="@+id/the_film_country"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
+                android:layout_marginHorizontal="32dp"
                 android:textColor="@color/black"
                 tools:text="film_country" />
 
@@ -79,7 +97,7 @@
                 android:id="@+id/the_film_length"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
+                android:layout_marginHorizontal="32dp"
                 android:layout_marginBottom="24dp"
                 android:textColor="@color/black"
                 tools:text="film_length" />

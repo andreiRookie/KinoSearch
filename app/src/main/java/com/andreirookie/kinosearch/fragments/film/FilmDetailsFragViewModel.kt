@@ -2,7 +2,7 @@ package com.andreirookie.kinosearch.fragments.film
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.andreirookie.kinosearch.data.net.NetworkRepository
+import com.andreirookie.kinosearch.domain.GetFilmInfoUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -10,11 +10,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 class FilmDetailsFragViewModel @Inject constructor(
-    private val networkRepo: NetworkRepository
+    private val getFilmInfoUseCase: GetFilmInfoUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<FilmDetailsFragState>(FilmDetailsFragState.Init)
@@ -27,8 +26,8 @@ class FilmDetailsFragViewModel @Inject constructor(
         _state.value = FilmDetailsFragState.Loading
         vmScope.launch {
             try {
-                val film = networkRepo.loadFilmById(id)
-                _state.value = FilmDetailsFragState.Data(film)
+                val filmInfo = getFilmInfoUseCase.execute(id)
+                _state.value = FilmDetailsFragState.Data(filmInfo)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -43,11 +42,11 @@ class FilmDetailsFragViewModel @Inject constructor(
     }
 
     companion object {
-        fun Factory(networkRepo: NetworkRepository) = object : ViewModelProvider.Factory {
+        fun Factory(getFilmInfoUseCase: GetFilmInfoUseCase) = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return when (modelClass) {
                     FilmDetailsFragViewModel::class.java -> {
-                        FilmDetailsFragViewModel(networkRepo) as T
+                        FilmDetailsFragViewModel(getFilmInfoUseCase) as T
                     }
                     else -> {
                         error("Unknown $modelClass")

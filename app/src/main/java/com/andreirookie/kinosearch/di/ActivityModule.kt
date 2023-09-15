@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.andreirookie.kinosearch.data.cache.InMemoryRepository
 import com.andreirookie.kinosearch.data.net.NetworkRepository
+import com.andreirookie.kinosearch.domain.GetFilmInfoUseCase
 import com.andreirookie.kinosearch.fragments.feed.FeedFragViewModel
 import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragViewModel
 import dagger.Module
@@ -16,9 +17,9 @@ object ActivityModule {
     @ActivityScope
     @Provides
     fun provideFilmDetailsFragViewModel(
-        networkRepo: NetworkRepository
+        getFilmInfoUseCase: GetFilmInfoUseCase
     ): FilmDetailsFragViewModel {
-        return FilmDetailsFragViewModel.Factory(networkRepo)
+        return FilmDetailsFragViewModel.Factory(getFilmInfoUseCase)
             .create(FilmDetailsFragViewModel::class.java)
     }
 

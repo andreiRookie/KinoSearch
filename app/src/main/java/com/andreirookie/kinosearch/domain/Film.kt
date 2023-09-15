@@ -1,4 +1,4 @@
-package com.andreirookie.kinosearch.data.models
+package com.andreirookie.kinosearch.domain
 
 data class Film(
     val id: Int,

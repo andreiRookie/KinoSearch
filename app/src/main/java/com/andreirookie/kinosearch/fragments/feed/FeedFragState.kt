@@ -1,6 +1,6 @@
 package com.andreirookie.kinosearch.fragments.feed
 
-import com.andreirookie.kinosearch.data.models.Film
+import com.andreirookie.kinosearch.domain.Film
 
 sealed interface FeedFragState {
     data object Loading : FeedFragState

@@ -44,5 +44,5 @@ object NetworkModule {
     }
 
     @Provides
-    fun provideDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    fun provideDispatcherIo(): CoroutineDispatcher = Dispatchers.IO
 }

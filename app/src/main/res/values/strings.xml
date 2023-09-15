@@ -5,4 +5,6 @@
     <string name="error_group_try_again">Try again</string>
     <string name="popular_button_text">Popular</string>
     <string name="favorite_button_text">Favorite</string>
+    <string name="film_director">Режиссер: %1$s</string>
+    <string name="film_cast">В главных ролях: %1$s</string>
 </resources>

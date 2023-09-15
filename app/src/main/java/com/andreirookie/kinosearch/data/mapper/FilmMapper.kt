@@ -1,16 +1,11 @@
-package com.andreirookie.kinosearch.fragments.feed
+package com.andreirookie.kinosearch.data.mapper
 
-import com.andreirookie.kinosearch.data.models.Film
 import com.andreirookie.kinosearch.data.models.FilmDetailsNetModel
 import com.andreirookie.kinosearch.data.models.FilmNetModel
+import com.andreirookie.kinosearch.domain.Film
 import javax.inject.Inject
 
-interface FilmMapper<E, M> {
-    fun mapFromEntity(e: E): M
-    fun mapFromEntityList(list: List<E>): List<M>
-}
-
-class FilmMapperImpl @Inject constructor() : FilmMapper<FilmNetModel, Film> {
+class FilmMapperImpl @Inject constructor() : Mapper<FilmNetModel, Film> {
 
     override fun mapFromEntity(e: FilmNetModel): Film {
         return Film(
@@ -22,13 +17,12 @@ class FilmMapperImpl @Inject constructor() : FilmMapper<FilmNetModel, Film> {
             country = e.countries.first().country.setFirstCharInUpperCase()
         )
     }
-
     override fun mapFromEntityList(list: List<FilmNetModel>): List<Film> {
         return list.map { entity -> mapFromEntity(entity) }
     }
 }
 
-class FilmDetailsMapperImpl @Inject constructor() : FilmMapper<FilmDetailsNetModel, Film> {
+class FilmDetailsMapperImpl @Inject constructor() : Mapper<FilmDetailsNetModel, Film> {
 
     override fun mapFromEntity(e: FilmDetailsNetModel): Film {
         return Film(
@@ -42,7 +36,6 @@ class FilmDetailsMapperImpl @Inject constructor() : FilmMapper<FilmDetailsNetMod
             filmLength = e.filmLength?.let { "$it мин." } ?: ""
         )
     }
-
     override fun mapFromEntityList(list: List<FilmDetailsNetModel>): List<Film> {
         return list.map { entity -> mapFromEntity(entity) }
     }

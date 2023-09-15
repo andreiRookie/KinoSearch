@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.andreirookie.kinosearch.R
 import com.andreirookie.kinosearch.databinding.FilmDetailsFragLayoutBinding
 import com.andreirookie.kinosearch.di.ActivityComponentHolder
 import com.andreirookie.kinosearch.di.FilmDetailsFragComponent
@@ -90,13 +91,20 @@ class FilmDetailsFragment : Fragment() {
                     theFilmDetailsProgressBar.isVisible = false
                     theFilmDetailsErrorGroup.isVisible = false
 
-                    Glide.with(root.context).load(state.film.posterUrl)
+                    Glide.with(root.context).load(state.filmInfo.film.posterUrl)
                         .into(binding.theFilmPosterImage)
 
-                    theFilmTitle.text = state.film.title
-                    theFilmDescription.text = state.film.description
-                    theFilmCountry.text = state.film.country
-                    theFilmLength.text = state.film.filmLength
+                    theFilmTitle.text = state.filmInfo.film.title
+                    theFilmDescription.text = state.filmInfo.film.description
+                    theFilmCountry.text = state.filmInfo.film.country
+                    theFilmLength.text = state.filmInfo.film.filmLength
+
+                    theFilmDirector.text = getString(
+                        R.string.film_director, state.filmInfo.director
+                    )
+                    theFilmCast.text = getString(
+                        R.string.film_cast, state.filmInfo.actors
+                    )
                 }
             }
         }

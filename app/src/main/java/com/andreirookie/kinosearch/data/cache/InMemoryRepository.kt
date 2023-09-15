@@ -1,6 +1,6 @@
 package com.andreirookie.kinosearch.data.cache
 
-import com.andreirookie.kinosearch.data.models.Film
+import com.andreirookie.kinosearch.domain.Film
 import javax.inject.Inject
 
 interface InMemoryRepository {

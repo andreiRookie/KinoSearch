@@ -1,8 +1,8 @@
 package com.andreirookie.kinosearch.fragments.feed
 
 import androidx.recyclerview.widget.RecyclerView
-import com.andreirookie.kinosearch.data.models.Film
 import com.andreirookie.kinosearch.databinding.FilmListItemLayoutBinding
+import com.andreirookie.kinosearch.domain.Film
 import com.bumptech.glide.Glide
 
 class FilmViewHolder(

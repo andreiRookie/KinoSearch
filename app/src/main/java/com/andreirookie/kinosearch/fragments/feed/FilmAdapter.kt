@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.andreirookie.kinosearch.data.models.Film
+import com.andreirookie.kinosearch.domain.Film
 import com.andreirookie.kinosearch.databinding.FilmListItemLayoutBinding
 
 class FilmAdapter(
