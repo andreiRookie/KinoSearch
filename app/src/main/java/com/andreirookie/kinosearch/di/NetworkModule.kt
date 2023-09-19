@@ -6,7 +6,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.Reusable
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -45,4 +47,7 @@ object NetworkModule {
 
     @Provides
     fun provideDispatcherIo(): CoroutineDispatcher = Dispatchers.IO
+
+    @Provides
+    fun provideCoroutineScope(): CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 }

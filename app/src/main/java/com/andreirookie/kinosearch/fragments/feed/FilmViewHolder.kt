@@ -10,7 +10,7 @@ class FilmViewHolder(
     private val listener: FilmCardInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(film: FilmFeedModel) {
+    fun bindTo(film: FilmFeedModel) {
         with(binding) {
             filmTitle.text = film.title
             filmGenre.text = film.genre
@@ -24,9 +24,15 @@ class FilmViewHolder(
             root.setOnClickListener {
                 listener.onCardClick(film.id)
             }
+
+            likeIcon.setOnCheckedChangeListener { _, _ ->
+                listener.onIconClick(film.id)
+            }
         }
     }
 }
+
 interface FilmCardInteractionListener {
     fun onCardClick(id: Int)
+    fun onIconClick(id: Int)
 }

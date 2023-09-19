@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.andreirookie.kinosearch.R
 import com.andreirookie.kinosearch.databinding.FeedFragPagerLayoutBinding
 import com.andreirookie.kinosearch.di.ActivityComponentHolder
@@ -50,28 +52,24 @@ class PopularFilmsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _adapter = FilmAdapter( object : FilmCardInteractionListener {
+
+        _adapter = FilmAdapter(object : FilmCardInteractionListener {
             override fun onCardClick(id: Int) {
                 viewModel.navigateToFilmDetailsFrag(id)
             }
+            override fun onIconClick(id: Int) {
+                viewModel.likeById(id)
+            }
         })
+
         _binding = FeedFragPagerLayoutBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onStart() {
         super.onStart()
-        vmJob = viewModel.eventsFlow.onEach {
-            when (it) {
-                is FeedFragViewModel.Event.NavigateToFilmFragDetails -> {
-                    val frag = FilmDetailsFragment.getInstance(it.id)
-                    parentFragmentManager.beginTransaction()
-                        .setReorderingAllowed(true)
-                        .add(R.id.feed_fragment_container, frag)
-                        .addToBackStack(FilmDetailsFragment.TAG)
-                        .commit()
-                }
-            }
+        vmJob = viewModel.eventsFlow.onEach { event ->
+            handle(event)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
@@ -81,28 +79,39 @@ class PopularFilmsFragment : Fragment() {
         with(binding) {
             recyclerView.adapter = adapter
 
+            (recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+
             swipeRefreshLayout.apply {
                 setColorSchemeColors(view.context.getColor(R.color.blue_200))
                 setOnRefreshListener {
-                    viewModel.loadPopFilms()
+                    viewModel.getPop()
+//                    viewModel.loadPopFilms()
                     isRefreshing = false
                 }
             }
 
             retryButton.setOnClickListener {
-                viewModel.loadPopFilms()
+                viewModel.getPop()
             }
         }
 
-        viewModel.loadPopFilms()
-
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.feedState.collect { state ->
+                viewModel.popFilmsFlow.collect {
+                    adapter.submitList(it)
+                }
+            }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.feedState.collect() { state ->
                     render(state)
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getPop()
     }
 
     private fun render(state: FeedFragState) {
@@ -113,27 +122,39 @@ class PopularFilmsFragment : Fragment() {
                     errorGroup.isVisible = false
                 }
             }
-            is FeedFragState.Error -> {
-                binding.apply {
-                    progressBar.isVisible = false
-                    errorGroup.isVisible = true
-                }
-            }
             is FeedFragState.Loading -> {
                 binding.apply {
                     progressBar.isVisible = true
                     errorGroup.isVisible = false
                 }
             }
-            is FeedFragState.PopularFilms -> {
-                adapter.submitList(state.popFilms)
+            is FeedFragState.Error -> {
                 binding.apply {
                     progressBar.isVisible = false
-                    errorGroup.isVisible = false
+                    errorGroup.isVisible = true
                 }
             }
-            is FeedFragState.FavoriteFilms -> {}
         }
+    }
+
+    private fun handle(event: ScreenEvent) {
+        when (event) {
+            is ScreenEvent.NavigateToFilmFragDetails -> {
+                val frag = FilmDetailsFragment.getInstance(event.filmId)
+                parentFragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.feed_fragment_container, frag)
+                    .addToBackStack(FilmDetailsFragment.TAG)
+                    .commit()
+            }
+            is ScreenEvent.Error -> {
+                showToast(event.msg)
+            }
+        }
+    }
+
+    private fun showToast(msg: String) {
+        Toast.makeText(this.context, msg, Toast.LENGTH_SHORT).show()
     }
 
     override fun onStop() {

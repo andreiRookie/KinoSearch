@@ -3,6 +3,7 @@ package com.andreirookie.kinosearch.di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.andreirookie.kinosearch.data.cache.InMemoryRepository
+import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.data.net.NetworkRepository
 import com.andreirookie.kinosearch.domain.GetFilmInfoUseCase
 import com.andreirookie.kinosearch.fragments.feed.FeedFragViewModel
@@ -27,22 +28,24 @@ object ActivityModule {
     @Provides
     fun provideFeedFragViewModelFactory(
         inMemoryRepo: InMemoryRepository,
-        networkRepo: NetworkRepository
+        networkRepo: NetworkRepository,
+        dbRepository: DbRepository
     ): FeedFragViewModelFactory {
-        return FeedFragViewModelFactory(inMemoryRepo, networkRepo)
+        return FeedFragViewModelFactory(inMemoryRepo, networkRepo, dbRepository)
     }
 }
 
 @Suppress("UNCHECKED_CAST")
 class FeedFragViewModelFactory @Inject constructor(
     private val inMemoryRepo: InMemoryRepository,
-    private val networkRepo: NetworkRepository
+    private val networkRepo: NetworkRepository,
+    private val dbRepository: DbRepository
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
             FeedFragViewModel::class.java -> {
-                FeedFragViewModel(inMemoryRepo, networkRepo) as T
+                FeedFragViewModel(inMemoryRepo, networkRepo, dbRepository) as T
             }
             else -> {
                 error("Unknown $modelClass")

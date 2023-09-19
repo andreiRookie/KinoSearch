@@ -1,7 +1,7 @@
 package com.andreirookie.kinosearch
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.andreirookie.kinosearch.di.ActivityComponentHolder
 import com.andreirookie.kinosearch.di.appComponent
 import com.andreirookie.kinosearch.fragments.feed.FeedFragment

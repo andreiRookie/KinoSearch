@@ -2,6 +2,8 @@ package com.andreirookie.kinosearch.di
 
 import com.andreirookie.kinosearch.data.cache.InMemoryRepository
 import com.andreirookie.kinosearch.data.cache.InMemoryRepositoryImpl
+import com.andreirookie.kinosearch.data.db.DbRepository
+import com.andreirookie.kinosearch.data.db.DbRepositoryImpl
 import com.andreirookie.kinosearch.data.mapper.FilmDetailsMapperImpl
 import com.andreirookie.kinosearch.data.mapper.FilmMapperImpl
 import com.andreirookie.kinosearch.data.mapper.FilmStaffMapper
@@ -21,6 +23,8 @@ import javax.inject.Singleton
 @Module
 interface RepositoryModule {
 
+    // TODO divide in net/db modules?
+
     @Singleton
     @Binds
     fun bindInMemoryRepository(impl: InMemoryRepositoryImpl): InMemoryRepository
@@ -37,4 +41,8 @@ interface RepositoryModule {
 
     @Binds
     fun bindFilmStaffMapper(impl: FilmStaffMapper): Mapper<StaffNetModel, Staff>
+
+    @Singleton
+    @Binds
+    fun bindDbRepository(impl: DbRepositoryImpl): DbRepository
 }

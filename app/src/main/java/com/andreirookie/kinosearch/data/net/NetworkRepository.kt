@@ -19,14 +19,14 @@ interface NetworkRepository {
 
 class NetworkRepositoryImpl @Inject constructor(
     private val service: ApiService,
-    private val dispatcher: CoroutineDispatcher,
+    private val dispatcherIo: CoroutineDispatcher,
     private val mapperFilms: Mapper<FilmNetModel, FilmFeedModel>,
     private val mapperFilmDetailsFeedModel: Mapper<FilmDetailsNetModel, FilmDetailsModel>,
     private val mapperFilmStaff: Mapper<StaffNetModel, Staff>
 ) : NetworkRepository {
 
     override suspend fun loadPopularFilms(): List<FilmFeedModel> {
-        return withContext(dispatcher) {
+        return withContext(dispatcherIo) {
             service.getTopFilms().let {
                 mapperFilms.mapFromEntityList(it.films)
             }
@@ -34,7 +34,7 @@ class NetworkRepositoryImpl @Inject constructor(
     }
 
     override suspend fun loadFilmById(filmId: Int): FilmDetailsModel {
-        return withContext(dispatcher) {
+        return withContext(dispatcherIo) {
             service.getFilmById(filmId).let {
                 mapperFilmDetailsFeedModel.mapFromEntity(it)
             }
@@ -42,7 +42,7 @@ class NetworkRepositoryImpl @Inject constructor(
     }
 
     override suspend fun loadStaffByFilmId(id: Int): List<Staff> {
-        return withContext(dispatcher) {
+        return withContext(dispatcherIo) {
             service.getStaffByFilmId(id).let { list ->
                 mapperFilmStaff.mapFromEntityList(list)
             }

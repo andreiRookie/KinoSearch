@@ -2,9 +2,11 @@ package com.andreirookie.kinosearch.fragments.feed
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
@@ -38,9 +40,23 @@ class FeedFragment : Fragment() {
             .getComponent(ActivityComponentHolder.getComponent(context.appComponent))
             .inject(this)
 
-        parentFragmentManager.commit {
-            setPrimaryNavigationFragment(this@FeedFragment)
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (childFragmentManager.backStackEntryCount > 0) {
+                    childFragmentManager.popBackStack()
+                } else {
+
+                    isEnabled = false
+                    parentFragmentManager.popBackStack()
+                    activity?.onBackPressed()
+                }
+            }
         }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+
+//        parentFragmentManager.commit {
+//            setPrimaryNavigationFragment(this@FeedFragment)
+//        }
     }
 
     override fun onCreateView(

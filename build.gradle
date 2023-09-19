@@ -25,7 +25,6 @@ buildscript {
             'viewpager'      : "androidx.viewpager2:viewpager2:${versions.viewpager}",
 
             'okhhtp': "com.squareup.okhttp3:okhttp:${versions.okhttp}",
-            'okhhtp_logging_intercepter': "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}",
 
             'retrofit': "com.squareup.retrofit2:retrofit:${versions.retrofit}",
             'retrofit_moshi_converter': "com.squareup.retrofit2:converter-moshi:${versions.retrofit}",

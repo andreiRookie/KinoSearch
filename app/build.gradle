@@ -80,7 +80,6 @@ dependencies {
     implementation deps.viewpager
 
     implementation deps.okhhtp
-    implementation deps.okhhtp_logging_intercepter
 
     implementation deps.retrofit
     implementation deps.retrofit_moshi_converter

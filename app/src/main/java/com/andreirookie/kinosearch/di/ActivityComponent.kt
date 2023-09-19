@@ -2,6 +2,7 @@ package com.andreirookie.kinosearch.di
 
 import com.andreirookie.kinosearch.MainActivity
 import com.andreirookie.kinosearch.data.cache.InMemoryRepository
+import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.data.net.NetworkRepository
 import dagger.Component
 import javax.inject.Scope
@@ -17,6 +18,8 @@ interface ActivityComponent {
 
     fun provideInMemoryRepository(): InMemoryRepository
     fun provideNetworkRepository(): NetworkRepository
+    fun provideDbRepository(): DbRepository
+
     fun inject(activity: MainActivity)
 
     @Component.Factory
