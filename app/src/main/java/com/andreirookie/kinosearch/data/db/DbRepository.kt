@@ -13,7 +13,7 @@ interface DbRepository {
     suspend fun requestAndSaveAll()
     suspend fun getPopFilms(): Flow<List<FilmFeedModel>>
     suspend fun getFavFilms(): Flow<List<FilmFeedModel>>
-    suspend fun likeById(filmId: Int)
+    suspend fun likeById(film: FilmFeedModel)
 }
 
 class DbRepositoryImpl @Inject constructor(
@@ -43,11 +43,13 @@ class DbRepositoryImpl @Inject constructor(
             }
         }
     }
-    override suspend fun likeById(filmId: Int) {
+    override suspend fun likeById(film: FilmFeedModel) {
         withContext(dispatcherIo) {
-            dao.likeFilmById(filmId)
+            dao.insert(film.toEntity())
+            dao.likeFilmById(film.id)
         }
     }
+
     private fun List<FilmFeedModel>.asEntityList(): List<FilmFeedEntity> {
         return this.map { it.toEntity() }
     }

@@ -35,7 +35,9 @@
             android:maxLines="1"
             android:inputType="text"
             android:textColor="@color/grey_300"
-            android:textColorHint="@color/grey_100" />
+            android:textCursorDrawable="@drawable/cursor_edittext_color"
+            android:textColorHint="@color/grey_100"
+            android:backgroundTint="@color/white"/>
     </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout

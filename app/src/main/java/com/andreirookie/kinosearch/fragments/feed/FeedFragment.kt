@@ -2,23 +2,18 @@ package com.andreirookie.kinosearch.fragments.feed
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.andreirookie.kinosearch.databinding.FeedFragLayoutBinding
 import com.andreirookie.kinosearch.di.ActivityComponentHolder
 import com.andreirookie.kinosearch.di.FeedFragComponent
-import com.andreirookie.kinosearch.di.FeedFragViewModelFactory
 import com.andreirookie.kinosearch.di.appComponent
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import javax.inject.Inject
 
 class FeedFragment : Fragment() {
 
@@ -29,11 +24,6 @@ class FeedFragment : Fragment() {
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FeedPagerAdapter
 
-    @Inject
-    lateinit var vmFactory: FeedFragViewModelFactory
-    private val viewModel: FeedFragViewModel by viewModels { vmFactory }
-
-    // TODO onBackpressed
     override fun onAttach(context: Context) {
         super.onAttach(context)
         FeedFragComponent

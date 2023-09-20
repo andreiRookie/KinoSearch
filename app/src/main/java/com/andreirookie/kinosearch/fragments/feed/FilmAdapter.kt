@@ -10,15 +10,23 @@ import com.andreirookie.kinosearch.databinding.FilmListItemLayoutBinding
 class FilmAdapter(
     private val listener: FilmCardInteractionListener
 ) : ListAdapter<FilmFeedModel, FilmViewHolder>(FilmDiffCallback()) {
+
+    private var _binding: FilmListItemLayoutBinding? = null
+    private val binding: FilmListItemLayoutBinding get() = _binding!!
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = FilmListItemLayoutBinding.inflate(inflater, parent, false)
+        _binding = FilmListItemLayoutBinding.inflate(inflater, parent, false)
         return FilmViewHolder(binding, listener)
     }
 
     override fun onBindViewHolder(holder: FilmViewHolder, position: Int) {
         val film = getItem(position)
         holder.bindTo(film)
+    }
+
+    override fun onViewRecycled(holder: FilmViewHolder) {
+        super.onViewRecycled(holder)
+        _binding = null
     }
 }
 

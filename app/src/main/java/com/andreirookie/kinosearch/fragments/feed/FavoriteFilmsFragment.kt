@@ -16,9 +16,10 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.andreirookie.kinosearch.R
 import com.andreirookie.kinosearch.databinding.FeedFragPagerLayoutBinding
 import com.andreirookie.kinosearch.di.ActivityComponentHolder
+import com.andreirookie.kinosearch.di.FavFragViewModelFactory
 import com.andreirookie.kinosearch.di.FavoriteFilmsFragComponent
-import com.andreirookie.kinosearch.di.FeedFragViewModelFactory
 import com.andreirookie.kinosearch.di.appComponent
+import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -35,8 +36,8 @@ class FavoriteFilmsFragment : Fragment() {
     private val adapter: FilmAdapter get() = _adapter!!
 
     @Inject
-    lateinit var vmFactory: FeedFragViewModelFactory
-    private val viewModel: FeedFragViewModel by viewModels { vmFactory }
+    lateinit var vmFactory: FavFragViewModelFactory
+    private val viewModel: FavFragViewModel by viewModels { vmFactory }
 
     private var vmJob: Job? = null
 
@@ -57,8 +58,8 @@ class FavoriteFilmsFragment : Fragment() {
             override fun onCardClick(id: Int) {
                 viewModel.navigateToFilmDetailsFrag(id)
             }
-            override fun onIconClick(id: Int) {
-                viewModel.likeById(id)
+            override fun onIconClick(film: FilmFeedModel) {
+                viewModel.likeById(film)
             }
         })
 
@@ -93,7 +94,6 @@ class FavoriteFilmsFragment : Fragment() {
                 viewModel.getFav()
             }
         }
-
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

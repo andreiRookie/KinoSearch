@@ -26,7 +26,7 @@ class FilmViewHolder(
             }
 
             likeIcon.setOnCheckedChangeListener { _, _ ->
-                listener.onIconClick(film.id)
+                listener.onIconClick(film)
             }
         }
     }
@@ -34,5 +34,5 @@ class FilmViewHolder(
 
 interface FilmCardInteractionListener {
     fun onCardClick(id: Int)
-    fun onIconClick(id: Int)
+    fun onIconClick(film: FilmFeedModel)
 }

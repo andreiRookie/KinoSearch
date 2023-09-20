@@ -15,6 +15,7 @@ interface NetworkRepository {
     suspend fun loadPopularFilms(): List<FilmFeedModel>
     suspend fun loadFilmById(filmId: Int): FilmDetailsModel
     suspend fun loadStaffByFilmId(id: Int): List<Staff>
+    suspend fun searchFilmByKeyword(keyword: String): List<FilmFeedModel>
 }
 
 class NetworkRepositoryImpl @Inject constructor(
@@ -27,8 +28,8 @@ class NetworkRepositoryImpl @Inject constructor(
 
     override suspend fun loadPopularFilms(): List<FilmFeedModel> {
         return withContext(dispatcherIo) {
-            service.getTopFilms().let {
-                mapperFilms.mapFromEntityList(it.films)
+            service.getTopFilms().let { response ->
+                mapperFilms.mapFromEntityList(response.films)
             }
         }
     }
@@ -48,9 +49,12 @@ class NetworkRepositoryImpl @Inject constructor(
             }
         }
     }
-}
 
-interface ApiCallback<T> { // Todo delete
-    fun onResponse(response: T)
-    fun onFailure(e: Exception)
+    override suspend fun searchFilmByKeyword(keyword: String): List<FilmFeedModel> {
+        return withContext(dispatcherIo) {
+            service.searchByKeyword(keyword).let { response ->
+                mapperFilms.mapFromEntityList(response.films)
+            }
+        }
+    }
 }

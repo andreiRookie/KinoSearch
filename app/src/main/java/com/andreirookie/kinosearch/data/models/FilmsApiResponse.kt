@@ -2,14 +2,14 @@ package com.andreirookie.kinosearch.data.models
 
 import com.squareup.moshi.Json
 
-data class PopularFilmsApiResponse(
+data class FilmsApiResponse(
     @field:Json(name = "films")
     val films: List<FilmNetModel>
 )
 
 data class FilmNetModel(
     @field:Json(name = "filmId")
-    val kinopoiskId: Int,
+    val filmId: Int,
     @field:Json(name = "nameRu")
     val nameRu: String?,
     @field:Json(name = "nameEn")

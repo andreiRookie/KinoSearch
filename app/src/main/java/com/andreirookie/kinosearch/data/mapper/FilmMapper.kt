@@ -10,7 +10,7 @@ class FilmMapperImpl @Inject constructor() : Mapper<FilmNetModel, FilmFeedModel>
 
     override fun mapFromEntity(e: FilmNetModel): FilmFeedModel {
         return FilmFeedModel(
-            id = e.kinopoiskId,
+            id = e.filmId,
             title = e.nameRu ?: e.nameEn ?: "No title info",
             posterUrlPreview = e.posterUrlPreview,
             issueYear = e.year?.toString() ?: "",

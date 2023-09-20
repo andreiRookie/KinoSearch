@@ -5,14 +5,15 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface FilmDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAll(entities: List<FilmFeedEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insert(entity: FilmFeedEntity)
 
     @Transaction
     @Query("SELECT * FROM films_feed ORDER BY film_id ASC")

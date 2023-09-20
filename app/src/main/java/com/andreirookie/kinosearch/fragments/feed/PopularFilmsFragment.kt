@@ -5,20 +5,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.andreirookie.kinosearch.R
 import com.andreirookie.kinosearch.databinding.FeedFragPagerLayoutBinding
 import com.andreirookie.kinosearch.di.ActivityComponentHolder
-import com.andreirookie.kinosearch.di.FeedFragViewModelFactory
+import com.andreirookie.kinosearch.di.PopFragViewModelFactory
 import com.andreirookie.kinosearch.di.PopularFilmsFragComponent
 import com.andreirookie.kinosearch.di.appComponent
+import com.andreirookie.kinosearch.domain.FilmFeedModel
+import com.andreirookie.kinosearch.domain.search.SearchState
 import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -35,8 +40,8 @@ class PopularFilmsFragment : Fragment() {
     private val adapter: FilmAdapter get() = _adapter!!
 
     @Inject
-    lateinit var vmFactory: FeedFragViewModelFactory
-    private val viewModel: FeedFragViewModel by viewModels { vmFactory }
+    lateinit var vmFactory: PopFragViewModelFactory
+    private val viewModel: PopFragViewModel by viewModels { vmFactory }
 
     private var vmJob: Job? = null
 
@@ -57,8 +62,8 @@ class PopularFilmsFragment : Fragment() {
             override fun onCardClick(id: Int) {
                 viewModel.navigateToFilmDetailsFrag(id)
             }
-            override fun onIconClick(id: Int) {
-                viewModel.likeById(id)
+            override fun onIconClick(film: FilmFeedModel) {
+                viewModel.likeById(film)
             }
         })
 
@@ -85,7 +90,6 @@ class PopularFilmsFragment : Fragment() {
                 setColorSchemeColors(view.context.getColor(R.color.blue_200))
                 setOnRefreshListener {
                     viewModel.getPop()
-//                    viewModel.loadPopFilms()
                     isRefreshing = false
                 }
             }
@@ -95,23 +99,41 @@ class PopularFilmsFragment : Fragment() {
             }
         }
 
+        val searchEditText = requireActivity().findViewById<EditText>(R.id.search_edit_text)
+        searchEditText.addTextChangedListener { editingText ->
+            lifecycleScope.launch {
+                editingText?.let { query -> viewModel.search(query.toString())}
+            }
+        }
+
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.popFilmsFlow.collect {
-                    adapter.submitList(it)
+                viewModel.popFilmsFlow.collect { list ->
+                    adapter.submitList(list)
                 }
             }
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.feedState.collect() { state ->
+                viewModel.feedState.collect { state ->
                     render(state)
                 }
             }
         }
+
+        viewModel.searchStateFlow
+            .flowWithLifecycle(lifecycle)
+            .onEach { searchState -> renderSearch(searchState)}
+            .launchIn(lifecycleScope)
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.getPop()
+    private fun renderSearch(state: SearchState) {
+        when (state) {
+            is SearchState.Empty -> {}
+            is SearchState.Init -> {}
+            is SearchState.Error -> {}
+            is SearchState.Result -> {
+                adapter.submitList(state.list)
+            }
+        }
     }
 
     private fun render(state: FeedFragState) {
