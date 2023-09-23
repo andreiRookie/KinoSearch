@@ -31,9 +31,7 @@ class FavFragViewModel(
 
     private val _favFilmsFlow = MutableStateFlow<List<FilmFeedModel>>(emptyList())
     val favFilmsFlow = _favFilmsFlow.asStateFlow()
-    init {
-        getFav()
-    }
+
     fun getFav() {
         _feedState.value = FeedFragState.Loading
         viewModelScope.launch {
@@ -46,19 +44,18 @@ class FavFragViewModel(
                 throw e
             } catch (e: Exception) {
                 _feedState.value = FeedFragState.Error(e)
-
             }
         }
     }
-    fun navigateToFilmDetailsFrag(id: Int) {
-        viewModelScope.launch {
-            eventsChannel.send(ScreenEvent.NavigateToFilmFragDetails(id))
-        }
-    }
-    fun likeById(film: FilmFeedModel) {
+
+    fun like(film: FilmFeedModel) {
         viewModelScope.launch {
             try {
-                dbRepository.likeById(film)
+                dbRepository.likeFilm(film)
+
+                dbRepository.getFavFilms().collect { list ->
+                    _favFilmsFlow.update { list }
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -66,6 +63,7 @@ class FavFragViewModel(
             }
         }
     }
+
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()

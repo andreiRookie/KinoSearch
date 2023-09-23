@@ -8,7 +8,6 @@ sealed interface FeedFragState {
     data class Error(val ex: Exception) : FeedFragState
 }
 sealed interface ScreenEvent {
-    data class NavigateToFilmFragDetails(val filmId: Int) : ScreenEvent
     data class Error(val msg: String) : ScreenEvent
 }
 

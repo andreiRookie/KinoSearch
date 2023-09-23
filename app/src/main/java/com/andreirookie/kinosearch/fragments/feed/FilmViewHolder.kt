@@ -10,6 +10,10 @@ class FilmViewHolder(
     private val listener: FilmCardInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    fun provideBinding(): FilmListItemLayoutBinding {
+        return binding
+    }
+
     fun bindTo(film: FilmFeedModel) {
         with(binding) {
             filmTitle.text = film.title
@@ -25,7 +29,7 @@ class FilmViewHolder(
                 listener.onCardClick(film.id)
             }
 
-            likeIcon.setOnCheckedChangeListener { _, _ ->
+            likeIcon.setOnClickListener {
                 listener.onIconClick(film)
             }
         }

@@ -28,12 +28,12 @@ data class FilmFeedEntity(
 ) {
     fun asModel(): FilmFeedModel {
         return FilmFeedModel(
-            id = this.filmId,
-            title = this.title,
-            posterUrlPreview = this.posterUrlPreview,
-            issueYear = this.issueYear,
-            genre = this.genre,
-            isLiked = this.isLiked
+            id = filmId,
+            title = title,
+            posterUrlPreview = posterUrlPreview,
+            issueYear = issueYear,
+            genre = genre,
+            isLiked = isLiked
         )
     }
 }

@@ -18,4 +18,6 @@ class MainActivity : AppCompatActivity() {
             .addToBackStack(FeedFragment.TAG)
             .commit()
     }
+
+    // todo tests
 }

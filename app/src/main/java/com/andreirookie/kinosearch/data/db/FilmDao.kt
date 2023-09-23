@@ -33,7 +33,7 @@ interface FilmDao {
 
 //    @Insert(onConflict = OnConflictStrategy.IGNORE)
 //    fun insertFilmDetailsInfoEntity(entity: FilmDetailsInfoEntity)
-
+// todo staff save
 //    @Transaction
 //    @Query("""SELECT""")
 //    suspend fun queryFilmDetailsInfoEntity(filmId: Int): FilmDetailsInfoEntity

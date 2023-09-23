@@ -8,7 +8,7 @@ import javax.inject.Inject
 class SearchUseCase @Inject constructor(
     private val networkRepo: NetworkRepository
 ) {
-    suspend fun execute(query: String): SearchResult {
+    suspend operator fun invoke(query: String): SearchResult {
         return withContext(Dispatchers.Default) {
             doNetSearch(query)
         }

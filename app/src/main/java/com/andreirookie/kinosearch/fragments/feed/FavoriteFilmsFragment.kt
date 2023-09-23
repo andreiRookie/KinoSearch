@@ -56,10 +56,15 @@ class FavoriteFilmsFragment : Fragment() {
 
         _adapter = FilmAdapter( object : FilmCardInteractionListener {
             override fun onCardClick(id: Int) {
-                viewModel.navigateToFilmDetailsFrag(id)
+                val frag = FilmDetailsFragment.getInstance(id)
+                parentFragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.feed_fragment_container, frag)
+                    .addToBackStack(FilmDetailsFragment.TAG)
+                    .commit()
             }
             override fun onIconClick(film: FilmFeedModel) {
-                viewModel.likeById(film)
+                viewModel.like(film)
             }
         })
 
@@ -139,15 +144,6 @@ class FavoriteFilmsFragment : Fragment() {
 
     private fun handle(event: ScreenEvent) {
         when (event) {
-            is ScreenEvent.NavigateToFilmFragDetails -> {
-
-                val frag = FilmDetailsFragment.getInstance(event.filmId)
-                parentFragmentManager.beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.feed_fragment_container, frag)
-                    .addToBackStack(FilmDetailsFragment.TAG)
-                    .commit()
-            }
             is ScreenEvent.Error -> {
                 showToast(event.msg)
             }

@@ -54,7 +54,7 @@ class PopFragViewModel(
 
     init {
         requestAll()
-        getPop()
+//        getPop()
         subscribeToSearchFlow()
     }
 
@@ -77,7 +77,7 @@ class PopFragViewModel(
     private suspend fun searchWithUseCase(query: String): SearchState {
         val result = viewModelScope.async {
             try {
-                val result = searchUseCase.execute(query)
+                val result = searchUseCase(query)
                 if (result.list.isNotEmpty()) {
                     return@async SearchState.Result(result.list)
                 } else {
@@ -108,13 +108,7 @@ class PopFragViewModel(
         }
     }
 
-    fun navigateToFilmDetailsFrag(id: Int) {
-        viewModelScope.launch {
-            eventsChannel.send(ScreenEvent.NavigateToFilmFragDetails(id))
-        }
-    }
-
-    fun requestAll() {
+    private fun requestAll() {
         _feedState.value = FeedFragState.Loading
         viewModelScope.launch {
             try {
@@ -128,10 +122,29 @@ class PopFragViewModel(
         }
     }
 
-    fun likeById(film: FilmFeedModel) {
+    fun loadPage(page: Int) {
+        _feedState.value = FeedFragState.Loading
         viewModelScope.launch {
             try {
-                dbRepository.likeById(film)
+                dbRepository.requestAndSaveAllByPage(page)
+
+                dbRepository.getPopFilms().collect { list ->
+                    _popFilmsFlow.update { list }
+                }
+
+                _feedState.value = FeedFragState.Init
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _feedState.value = FeedFragState.Error(e)
+            }
+        }
+    }
+
+    fun like(film: FilmFeedModel) {
+        viewModelScope.launch {
+            try {
+                dbRepository.likeFilm(film)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

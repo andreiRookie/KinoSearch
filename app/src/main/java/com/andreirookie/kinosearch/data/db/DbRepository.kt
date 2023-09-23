@@ -1,8 +1,8 @@
 package com.andreirookie.kinosearch.data.db
 
+import android.util.Log
 import com.andreirookie.kinosearch.data.net.NetworkRepository
 import com.andreirookie.kinosearch.domain.FilmFeedModel
-import com.andreirookie.kinosearch.domain.FilmFeedModel.Companion.toEntity
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -11,9 +11,10 @@ import javax.inject.Inject
 
 interface DbRepository {
     suspend fun requestAndSaveAll()
+    suspend fun requestAndSaveAllByPage(page: Int)
     suspend fun getPopFilms(): Flow<List<FilmFeedModel>>
     suspend fun getFavFilms(): Flow<List<FilmFeedModel>>
-    suspend fun likeById(film: FilmFeedModel)
+    suspend fun likeFilm(film: FilmFeedModel)
 }
 
 class DbRepositoryImpl @Inject constructor(
@@ -24,6 +25,7 @@ class DbRepositoryImpl @Inject constructor(
     override suspend fun getPopFilms(): Flow<List<FilmFeedModel>> {
         return flow {
             emit(withContext(dispatcherIo) {
+                Log.e("AAA", "getPopFilms(): ${dao.queryAll()}")
                 dao.queryAll().map { it.asModel() }
             })
         }
@@ -31,8 +33,18 @@ class DbRepositoryImpl @Inject constructor(
     override suspend fun getFavFilms(): Flow<List<FilmFeedModel>> {
         return flow {
             emit(withContext(dispatcherIo) {
+                Log.e("AAA", "getFavFilms(): ${dao.queryAllFavorites()}")
                 dao.queryAllFavorites().map { it.asModel() }
             })
+        }
+    }
+
+    override suspend fun requestAndSaveAllByPage(page: Int) {
+        withContext(dispatcherIo) {
+            val popFilms = networkRepository.loadPopularFilmsByPage(page)
+            if (popFilms.isNotEmpty()) {
+                dao.insertAll(popFilms.asEntityList())
+            }
         }
     }
     override suspend fun requestAndSaveAll() {
@@ -43,14 +55,14 @@ class DbRepositoryImpl @Inject constructor(
             }
         }
     }
-    override suspend fun likeById(film: FilmFeedModel) {
+    override suspend fun likeFilm(film: FilmFeedModel) {
         withContext(dispatcherIo) {
-            dao.insert(film.toEntity())
+            dao.insert(film.asEntity())
             dao.likeFilmById(film.id)
         }
     }
 
     private fun List<FilmFeedModel>.asEntityList(): List<FilmFeedEntity> {
-        return this.map { it.toEntity() }
+        return this.map { it.asEntity() }
     }
 }

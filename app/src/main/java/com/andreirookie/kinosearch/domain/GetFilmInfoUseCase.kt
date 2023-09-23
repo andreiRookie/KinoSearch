@@ -27,7 +27,7 @@ class GetFilmInfoUseCase @Inject constructor(
 
         val directorString = directorList.take(maxDirectorsQuantity).concatenateNames()
         val actorString = actorList.take(maxActorsQuantity).concatenateNames()
-
+// todo clickable staff
         return FilmInfo(film, directorString, actorString)
     }
 

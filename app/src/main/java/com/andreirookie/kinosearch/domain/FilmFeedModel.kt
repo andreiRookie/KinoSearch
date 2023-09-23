@@ -10,16 +10,15 @@ data class FilmFeedModel(
     val genre: String = "",
     val isLiked: Boolean = false
 ) {
-    companion object {
-        fun FilmFeedModel.toEntity(): FilmFeedEntity {
-            return FilmFeedEntity(
-                filmId = this.id,
-                title = this.title,
-                posterUrlPreview = this.posterUrlPreview,
-                issueYear = this.issueYear,
-                genre = this.genre,
-                isLiked = this.isLiked
-            )
-        }
+
+    fun asEntity(): FilmFeedEntity {
+        return FilmFeedEntity(
+            filmId = id,
+            title = title,
+            posterUrlPreview = posterUrlPreview,
+            issueYear = issueYear,
+            genre = genre,
+            isLiked = isLiked
+        )
     }
 }

@@ -23,8 +23,6 @@ import javax.inject.Singleton
 @Module
 interface RepositoryModule {
 
-    // TODO divide in net/db modules?
-
     @Singleton
     @Binds
     fun bindInMemoryRepository(impl: InMemoryRepositoryImpl): InMemoryRepository
