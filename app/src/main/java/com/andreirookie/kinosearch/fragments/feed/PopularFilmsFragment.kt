@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.andreirookie.kinosearch.R
 import com.andreirookie.kinosearch.databinding.FeedFragPagerLayoutBinding
@@ -44,6 +45,8 @@ class PopularFilmsFragment : Fragment() {
     private val viewModel: PopFragViewModel by viewModels { vmFactory }
 
     private var vmJob: Job? = null
+
+    private lateinit var paginator: PopFilmsPaginator
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -85,11 +88,20 @@ class PopularFilmsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-// todo pagination
+
         with(binding) {
             recyclerView.adapter = adapter
 
             (recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+
+            paginator = PopFilmsPaginator(recyclerView.layoutManager as GridLayoutManager).apply {
+                setOnListener {
+                    startLoading()
+                    viewModel.requestAllByPage(nextPage)
+                }
+            }
+            recyclerView.addOnScrollListener(paginator)
+            viewModel.requestAllByPage(FIRST_PAGE)
 
             swipeRefreshLayout.apply {
                 setColorSchemeColors(view.context.getColor(R.color.blue_200))
@@ -115,6 +127,7 @@ class PopularFilmsFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.popFilmsFlow.collect { list ->
                     adapter.submitList(list)
+                    paginator.stopLoading()
                 }
             }
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -194,5 +207,6 @@ class PopularFilmsFragment : Fragment() {
 
     companion object {
         const val TAB_TAG = "Popular"
+        private const val FIRST_PAGE = 1
     }
 }

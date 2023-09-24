@@ -16,11 +16,11 @@ interface FilmDao {
     fun insert(entity: FilmFeedEntity)
 
     @Transaction
-    @Query("SELECT * FROM films_feed ORDER BY film_id ASC")
+    @Query("SELECT * FROM films_feed ORDER BY film_id DESC")
     fun queryAll(): List<FilmFeedEntity>
 
     @Transaction
-    @Query("SELECT * FROM films_feed WHERE is_liked = 1 ORDER BY film_id ASC")
+    @Query("SELECT * FROM films_feed WHERE is_liked = 1 ORDER BY film_id DESC")
     fun queryAllFavorites(): List<FilmFeedEntity>
 
     @Query("""UPDATE films_feed SET

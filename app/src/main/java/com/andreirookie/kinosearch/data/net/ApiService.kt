@@ -10,10 +10,7 @@ import retrofit2.http.Query
 interface ApiService {
 
     @GET(value = "/api/v2.2/films/top?type=TOP_100_POPULAR_FILMS")
-    suspend fun getTopFilms(): FilmsApiResponse
-
-    @GET(value = "/api/v2.2/films/top?type=TOP_100_POPULAR_FILMS")
-    suspend fun getTopFilmsByPages(@Path("page") page: Int): FilmsApiResponse
+    suspend fun getTopFilmsByPages(@Query("page") page: Int): FilmsApiResponse
 
     @GET(value = "/api/v2.2/films/{id}")
     suspend fun getFilmById(@Path("id") filmId: Int): FilmDetailsNetModel

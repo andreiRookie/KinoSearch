@@ -53,8 +53,6 @@ class PopFragViewModel(
     val searchStateFlow: StateFlow<SearchState> get() = _searchStateFlow.asStateFlow()
 
     init {
-        requestAll()
-//        getPop()
         subscribeToSearchFlow()
     }
 
@@ -108,21 +106,7 @@ class PopFragViewModel(
         }
     }
 
-    private fun requestAll() {
-        _feedState.value = FeedFragState.Loading
-        viewModelScope.launch {
-            try {
-                dbRepository.requestAndSaveAll()
-                _feedState.value = FeedFragState.Init
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _feedState.value = FeedFragState.Error(e)
-            }
-        }
-    }
-
-    fun loadPage(page: Int) {
+    fun requestAllByPage(page: Int) {
         _feedState.value = FeedFragState.Loading
         viewModelScope.launch {
             try {

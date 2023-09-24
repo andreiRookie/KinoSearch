@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-<!--     todo button anim-->
     <ImageButton
         android:id="@+id/go_back_button"
         android:layout_width="wrap_content"

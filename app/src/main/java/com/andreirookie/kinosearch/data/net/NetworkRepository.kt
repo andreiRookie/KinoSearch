@@ -12,8 +12,6 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface NetworkRepository {
-    suspend fun loadPopularFilms(): List<FilmFeedModel>
-
     suspend fun loadPopularFilmsByPage(page: Int): List<FilmFeedModel>
     suspend fun loadFilmById(filmId: Int): FilmDetailsModel
     suspend fun loadStaffByFilmId(id: Int): List<Staff>
@@ -31,14 +29,6 @@ class NetworkRepositoryImpl @Inject constructor(
     override suspend fun loadPopularFilmsByPage(page: Int): List<FilmFeedModel> {
         return withContext(dispatcherIo) {
             service.getTopFilmsByPages(page).let { response ->
-                mapperFilms.mapFromEntityList(response.films)
-            }
-        }
-    }
-
-    override suspend fun loadPopularFilms(): List<FilmFeedModel> {
-        return withContext(dispatcherIo) {
-            service.getTopFilms().let { response ->
                 mapperFilms.mapFromEntityList(response.films)
             }
         }
