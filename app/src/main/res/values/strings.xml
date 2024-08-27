@@ -7,4 +7,5 @@
     <string name="favorite_button_text">Favorite</string>
     <string name="film_director">Режиссер: %1$s</string>
     <string name="film_cast">В главных ролях: %1$s</string>
+    <string name="film_year">(%1$s)</string>
 </resources>
