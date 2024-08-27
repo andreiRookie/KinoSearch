@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -139,6 +140,6 @@ class PopFragViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        viewModelJob.cancel()
+        viewModelScope.coroutineContext.cancelChildren()
     }
 }
