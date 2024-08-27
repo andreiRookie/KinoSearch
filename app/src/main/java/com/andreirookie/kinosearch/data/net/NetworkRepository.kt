@@ -27,34 +27,26 @@ class NetworkRepositoryImpl @Inject constructor(
 ) : NetworkRepository {
 
     override suspend fun loadPopularFilmsByPage(page: Int): List<FilmFeedModel> {
-        return withContext(dispatcherIo) {
-            service.getTopFilmsByPages(page).let { response ->
-                mapperFilms.mapFromEntityList(response.films)
-            }
+        return service.getTopFilmsByPages(page).let { response ->
+            mapperFilms.mapFromEntityList(response.films)
         }
     }
 
     override suspend fun loadFilmById(filmId: Int): FilmDetailsModel {
-        return withContext(dispatcherIo) {
-            service.getFilmById(filmId).let {
-                mapperFilmDetailsFeedModel.mapFromEntity(it)
-            }
+        return service.getFilmById(filmId).let {
+            mapperFilmDetailsFeedModel.mapFromEntity(it)
         }
     }
 
     override suspend fun loadStaffByFilmId(id: Int): List<Staff> {
-        return withContext(dispatcherIo) {
-            service.getStaffByFilmId(id).let { list ->
-                mapperFilmStaff.mapFromEntityList(list)
-            }
+        return service.getStaffByFilmId(id).let { list ->
+            mapperFilmStaff.mapFromEntityList(list)
         }
     }
 
     override suspend fun searchFilmByKeyword(keyword: String): List<FilmFeedModel> {
-        return withContext(dispatcherIo) {
-            service.searchByKeyword(keyword).let { response ->
-                mapperFilms.mapFromEntityList(response.films)
-            }
+        return service.searchByKeyword(keyword).let { response ->
+            mapperFilms.mapFromEntityList(response.films)
         }
     }
 }
