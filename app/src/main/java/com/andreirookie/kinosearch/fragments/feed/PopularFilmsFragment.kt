@@ -70,7 +70,7 @@ class PopularFilmsFragment : Fragment() {
                     .addToBackStack(FilmDetailsFragment.TAG)
                     .commit()
             }
-            override fun onIconClick(film: FilmFeedModel) {
+            override fun onLikeIconClick(film: FilmFeedModel) {
                 viewModel.like(film)
             }
         })

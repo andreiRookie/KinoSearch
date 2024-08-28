@@ -17,24 +17,7 @@ class FilmAdapter(
         val inflater = LayoutInflater.from(parent.context)
         _binding = FilmListItemLayoutBinding.inflate(inflater, parent, false)
 
-        val holder = FilmViewHolder(binding, listener)
-
-        // TODO delete
-//        holder.itemView.setOnClickListener {
-//            if (holder.bindingAdapterPosition != RecyclerView.NO_POSITION) {
-//
-//                val film = getItem(holder.bindingAdapterPosition)
-//                listener.onCardClick(film.id)
-//            }
-//        }
-//        holder.provideBinding().likeIcon.setOnCheckedChangeListener { _, _ ->
-//            if (holder.bindingAdapterPosition != RecyclerView.NO_POSITION) {
-//                val film = getItem(holder.bindingAdapterPosition)
-//                listener.onIconClick(film)
-//            }
-//        }
-
-        return holder
+        return FilmViewHolder(binding, listener)
     }
 
     override fun onBindViewHolder(holder: FilmViewHolder, position: Int) {
@@ -42,8 +25,6 @@ class FilmAdapter(
         holder.bindTo(film)
     }
 
-
-    // TODO: does it affect??
     override fun onViewRecycled(holder: FilmViewHolder) {
         super.onViewRecycled(holder)
         _binding = null
