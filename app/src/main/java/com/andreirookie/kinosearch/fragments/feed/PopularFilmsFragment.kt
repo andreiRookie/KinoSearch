@@ -138,28 +138,28 @@ class PopularFilmsFragment : Fragment() {
         }
     }
 
-    private fun render(state: FeedFragState<List<FilmFeedModel>>) {
+    private fun render(state: FilmFeedState<List<FilmFeedModel>>) {
         when (state) {
-            is FeedFragState.Init -> {
+            is FilmFeedState.Init -> {
                 binding.apply {
                     progressBar.isVisible = false
                     errorGroup.isVisible = false
                 }
             }
-            is FeedFragState.Loading -> {
+            is FilmFeedState.Loading -> {
                 binding.apply {
                     progressBar.isVisible = true
                     errorGroup.isVisible = false
                 }
             }
-            is FeedFragState.Error -> {
+            is FilmFeedState.Error -> {
                 binding.apply {
                     progressBar.isVisible = false
                     errorGroup.isVisible = true
                 }
                 showToast(state.ex.toString())
             }
-            is FeedFragState.Data -> {
+            is FilmFeedState.Data -> {
                 binding.apply {
                     progressBar.isVisible = false
                     errorGroup.isVisible = false

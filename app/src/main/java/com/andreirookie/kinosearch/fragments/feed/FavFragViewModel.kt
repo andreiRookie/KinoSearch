@@ -20,21 +20,21 @@ class FavFragViewModel(
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate + viewModelJob)
 
-    private val _feedState = MutableStateFlow<FeedFragState<List<FilmFeedModel>>>(FeedFragState.Init())
-    val feedState: StateFlow<FeedFragState<List<FilmFeedModel>>> get() = _feedState.asStateFlow()
+    private val _feedState = MutableStateFlow<FilmFeedState<List<FilmFeedModel>>>(FilmFeedState.Init())
+    val feedState: StateFlow<FilmFeedState<List<FilmFeedModel>>> get() = _feedState.asStateFlow()
 
     fun getFav() {
-        _feedState.value = FeedFragState.Loading()
+        _feedState.value = FilmFeedState.Loading()
         viewModelScope.launch {
             try {
                 dbRepository.getFavFilms().collect { list ->
-                    _feedState.value = FeedFragState.Data(list)
+                    _feedState.value = FilmFeedState.Data(list)
                 }
-                _feedState.value = FeedFragState.Init()
+                _feedState.value = FilmFeedState.Init()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _feedState.value = FeedFragState.Error(e)
+                _feedState.value = FilmFeedState.Error(e)
             }
         }
     }
@@ -45,12 +45,12 @@ class FavFragViewModel(
                 dbRepository.likeFilm(film)
 
                 dbRepository.getFavFilms().collect { list ->
-                    _feedState.value = FeedFragState.Data(list)
+                    _feedState.value = FilmFeedState.Data(list)
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _feedState.value = FeedFragState.Error(e)
+                _feedState.value = FilmFeedState.Error(e)
             }
         }
     }

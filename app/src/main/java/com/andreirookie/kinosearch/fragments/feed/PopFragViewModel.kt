@@ -35,8 +35,8 @@ class PopFragViewModel(
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate + viewModelJob)
 
-    private val _feedState = MutableStateFlow<FeedFragState<List<FilmFeedModel>>>(FeedFragState.Init())
-    val feedState: StateFlow<FeedFragState<List<FilmFeedModel>>> get() = _feedState.asStateFlow()
+    private val _feedState = MutableStateFlow<FilmFeedState<List<FilmFeedModel>>>(FilmFeedState.Init())
+    val feedState: StateFlow<FilmFeedState<List<FilmFeedModel>>> get() = _feedState.asStateFlow()
 
     private val searchQueryFlow: MutableSharedFlow<String> = MutableSharedFlow()
 
@@ -82,33 +82,33 @@ class PopFragViewModel(
     }
 
     fun getPop() {
-        _feedState.value = FeedFragState.Loading()
+        _feedState.value = FilmFeedState.Loading()
         viewModelScope.launch {
             try {
                 dbRepository.getPopFilms().collect { list ->
-                    _feedState.value = FeedFragState.Data(list)
+                    _feedState.value = FilmFeedState.Data(list)
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _feedState.value = FeedFragState.Error(e)
+                _feedState.value = FilmFeedState.Error(e)
             }
         }
     }
 
     fun requestAllByPage(page: Int) {
-        _feedState.value = FeedFragState.Loading()
+        _feedState.value = FilmFeedState.Loading()
         viewModelScope.launch {
             try {
                 dbRepository.requestAndSaveAllByPage(page)
 
                 dbRepository.getPopFilms().collect { list ->
-                    _feedState.value = FeedFragState.Data(list)
+                    _feedState.value = FilmFeedState.Data(list)
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _feedState.value = FeedFragState.Error(e)
+                _feedState.value = FilmFeedState.Error(e)
             }
         }
     }
