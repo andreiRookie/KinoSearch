@@ -13,8 +13,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,8 +25,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PopFragViewModel(
@@ -39,14 +35,8 @@ class PopFragViewModel(
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate + viewModelJob)
 
-    private val _feedState = MutableStateFlow<FeedFragState>(FeedFragState.Init)
-    val feedState: StateFlow<FeedFragState> get() = _feedState.asStateFlow()
-
-    private val eventsChannel = Channel<ScreenEvent>(Channel.BUFFERED)
-    val eventsFlow: Flow<ScreenEvent> = eventsChannel.receiveAsFlow()
-
-    private val _popFilmsFlow = MutableStateFlow<List<FilmFeedModel>>(emptyList())
-    val popFilmsFlow = _popFilmsFlow.asStateFlow()
+    private val _feedState = MutableStateFlow<FeedFragState<List<FilmFeedModel>>>(FeedFragState.Init())
+    val feedState: StateFlow<FeedFragState<List<FilmFeedModel>>> get() = _feedState.asStateFlow()
 
     private val searchQueryFlow: MutableSharedFlow<String> = MutableSharedFlow()
 
@@ -92,13 +82,12 @@ class PopFragViewModel(
     }
 
     fun getPop() {
-        _feedState.value = FeedFragState.Loading
+        _feedState.value = FeedFragState.Loading()
         viewModelScope.launch {
             try {
                 dbRepository.getPopFilms().collect { list ->
-                    _popFilmsFlow.update { list }
+                    _feedState.value = FeedFragState.Data(list)
                 }
-                _feedState.value = FeedFragState.Init
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -108,16 +97,14 @@ class PopFragViewModel(
     }
 
     fun requestAllByPage(page: Int) {
-        _feedState.value = FeedFragState.Loading
+        _feedState.value = FeedFragState.Loading()
         viewModelScope.launch {
             try {
                 dbRepository.requestAndSaveAllByPage(page)
 
                 dbRepository.getPopFilms().collect { list ->
-                    _popFilmsFlow.update { list }
+                    _feedState.value = FeedFragState.Data(list)
                 }
-
-                _feedState.value = FeedFragState.Init
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -133,7 +120,7 @@ class PopFragViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                eventsChannel.send(ScreenEvent.Error("Error"))
+                println(e.message)
             }
         }
     }

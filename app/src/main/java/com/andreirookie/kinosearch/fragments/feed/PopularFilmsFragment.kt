@@ -26,7 +26,6 @@ import com.andreirookie.kinosearch.di.appComponent
 import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.andreirookie.kinosearch.domain.search.SearchState
 import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragment
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -44,9 +43,7 @@ class PopularFilmsFragment : Fragment() {
     lateinit var vmFactory: PopFragViewModelFactory
     private val viewModel: PopFragViewModel by viewModels { vmFactory }
 
-    private var vmJob: Job? = null
-
-    private lateinit var paginator: PopFilmsPaginator
+    private lateinit var paginater: PopFilmsPaginaterImpl
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -79,13 +76,6 @@ class PopularFilmsFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        vmJob = viewModel.eventsFlow.onEach { event ->
-            handle(event)
-        }.launchIn(viewLifecycleOwner.lifecycleScope)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -94,13 +84,13 @@ class PopularFilmsFragment : Fragment() {
 
             (recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
-            paginator = PopFilmsPaginator(recyclerView.layoutManager as GridLayoutManager).apply {
+            paginater = PopFilmsPaginaterImpl(recyclerView.layoutManager as GridLayoutManager).apply {
                 setOnListener {
                     startLoading()
                     viewModel.requestAllByPage(nextPage)
                 }
             }
-            recyclerView.addOnScrollListener(paginator)
+            recyclerView.addOnScrollListener(paginater)
             viewModel.requestAllByPage(FIRST_PAGE)
 
             swipeRefreshLayout.apply {
@@ -125,12 +115,6 @@ class PopularFilmsFragment : Fragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.popFilmsFlow.collect { list ->
-                    adapter.submitList(list)
-                    paginator.stopLoading()
-                }
-            }
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.feedState.collect { state ->
                     render(state)
                 }
@@ -154,7 +138,7 @@ class PopularFilmsFragment : Fragment() {
         }
     }
 
-    private fun render(state: FeedFragState) {
+    private fun render(state: FeedFragState<List<FilmFeedModel>>) {
         when (state) {
             is FeedFragState.Init -> {
                 binding.apply {
@@ -173,14 +157,15 @@ class PopularFilmsFragment : Fragment() {
                     progressBar.isVisible = false
                     errorGroup.isVisible = true
                 }
+                showToast(state.ex.toString())
             }
-        }
-    }
-
-    private fun handle(event: ScreenEvent) {
-        when (event) {
-            is ScreenEvent.Error -> {
-                showToast(event.msg)
+            is FeedFragState.Data -> {
+                binding.apply {
+                    progressBar.isVisible = false
+                    errorGroup.isVisible = false
+                }
+                adapter.submitList(state.data)
+                paginater.stopLoading()
             }
         }
     }
@@ -192,11 +177,6 @@ class PopularFilmsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.getPop()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        vmJob?.cancel()
     }
 
     override fun onDestroyView() {

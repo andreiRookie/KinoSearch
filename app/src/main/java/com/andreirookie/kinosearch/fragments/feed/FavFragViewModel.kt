@@ -8,13 +8,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class FavFragViewModel(
@@ -24,23 +20,17 @@ class FavFragViewModel(
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate + viewModelJob)
 
-    private val _feedState = MutableStateFlow<FeedFragState>(FeedFragState.Init)
-    val feedState: StateFlow<FeedFragState> get() = _feedState.asStateFlow()
-
-    private val eventsChannel = Channel<ScreenEvent>(Channel.BUFFERED)
-    val eventsFlow: Flow<ScreenEvent> = eventsChannel.receiveAsFlow()
-
-    private val _favFilmsFlow = MutableStateFlow<List<FilmFeedModel>>(emptyList())
-    val favFilmsFlow = _favFilmsFlow.asStateFlow()
+    private val _feedState = MutableStateFlow<FeedFragState<List<FilmFeedModel>>>(FeedFragState.Init())
+    val feedState: StateFlow<FeedFragState<List<FilmFeedModel>>> get() = _feedState.asStateFlow()
 
     fun getFav() {
-        _feedState.value = FeedFragState.Loading
+        _feedState.value = FeedFragState.Loading()
         viewModelScope.launch {
             try {
                 dbRepository.getFavFilms().collect { list ->
-                    _favFilmsFlow.update { list }
+                    _feedState.value = FeedFragState.Data(list)
                 }
-                _feedState.value = FeedFragState.Init
+                _feedState.value = FeedFragState.Init()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -55,12 +45,12 @@ class FavFragViewModel(
                 dbRepository.likeFilm(film)
 
                 dbRepository.getFavFilms().collect { list ->
-                    _favFilmsFlow.update { list }
+                    _feedState.value = FeedFragState.Data(list)
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                eventsChannel.send(ScreenEvent.Error("Error"))
+                _feedState.value = FeedFragState.Error(e)
             }
         }
     }

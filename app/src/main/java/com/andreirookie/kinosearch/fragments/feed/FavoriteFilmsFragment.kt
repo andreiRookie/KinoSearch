@@ -21,9 +21,6 @@ import com.andreirookie.kinosearch.di.FavoriteFilmsFragComponent
 import com.andreirookie.kinosearch.di.appComponent
 import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragment
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,8 +36,6 @@ class FavoriteFilmsFragment : Fragment() {
     lateinit var vmFactory: FavFragViewModelFactory
     private val viewModel: FavFragViewModel by viewModels { vmFactory }
 
-    private var vmJob: Job? = null
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         FavoriteFilmsFragComponent
@@ -53,6 +48,7 @@ class FavoriteFilmsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FeedFragPagerLayoutBinding.inflate(inflater, container, false)
 
         _adapter = FilmAdapter( object : FilmCardInteractionListener {
             override fun onCardClick(id: Int) {
@@ -68,15 +64,7 @@ class FavoriteFilmsFragment : Fragment() {
             }
         })
 
-        _binding = FeedFragPagerLayoutBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        vmJob = viewModel.eventsFlow.onEach { event ->
-            handle(event)
-        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,11 +90,6 @@ class FavoriteFilmsFragment : Fragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.favFilmsFlow.collect {
-                    adapter.submitList(it)
-                }
-            }
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.feedState.collect { state ->
                     render(state)
                 }
@@ -119,7 +102,7 @@ class FavoriteFilmsFragment : Fragment() {
         viewModel.getFav()
     }
 
-    private fun render(state: FeedFragState) {
+    private fun render(state: FeedFragState<List<FilmFeedModel>>) {
         when (state) {
             is FeedFragState.Init -> {
                 binding.apply {
@@ -138,25 +121,20 @@ class FavoriteFilmsFragment : Fragment() {
                     progressBar.isVisible = false
                     errorGroup.isVisible = true
                 }
+                showToast(state.ex.toString())
             }
-        }
-    }
-
-    private fun handle(event: ScreenEvent) {
-        when (event) {
-            is ScreenEvent.Error -> {
-                showToast(event.msg)
+            is FeedFragState.Data -> {
+                binding.apply {
+                    progressBar.isVisible = false
+                    errorGroup.isVisible = false
+                }
+                adapter.submitList(state.data)
             }
         }
     }
 
     private fun showToast(msg: String) {
         Toast.makeText(this.context, msg, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        vmJob?.cancel()
     }
 
     override fun onDestroyView() {
