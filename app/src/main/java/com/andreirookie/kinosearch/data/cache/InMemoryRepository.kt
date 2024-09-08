@@ -10,6 +10,12 @@ interface InMemoryRepository {
     suspend fun getFavFilms(): List<FilmFeedModel>
 }
 
+/**
+ * Почему-то не используются параметры конструтора
+ *
+ * Репозиторий не должен регламентировать где данные хранятся. И стейта у него быть не должно.
+ * Репозиторий умеет получать/сохранять/удалять данные из различных источников данных
+ */
 class InMemoryRepositoryImpl @Inject constructor(
     private val dbRepository: DbRepository,
     private val coroutineScope: CoroutineScope

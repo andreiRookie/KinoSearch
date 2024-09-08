@@ -27,6 +27,16 @@ class DbRepositoryImpl @Inject constructor(
             })
         }
     }
+
+    /**
+     * Чтобы поменять диспатчер эммитера нужно использовать flowOn оператор,
+     * странно что у тебя не падает исключение
+     * https://kotlinlang.org/docs/flow.html#a-common-pitfall-when-using-withcontext
+     *
+     * Ну и вообще когда работаешь с ретрофитом и румом - переключать диспатчер не нужно,
+     * они сами поддерживают саспенд функции
+     *
+     */
     override suspend fun getFavFilms(): Flow<List<FilmFeedModel>> {
         return flow {
             emit(withContext(dispatcherIo) {

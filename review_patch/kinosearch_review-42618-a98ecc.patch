@@ -1,0 +1,142 @@
+Subject: [PATCH] kinosearch review
+---
+Index: app/src/main/java/com/andreirookie/kinosearch/di/DatabaseModule.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/andreirookie/kinosearch/di/DatabaseModule.kt b/app/src/main/java/com/andreirookie/kinosearch/di/DatabaseModule.kt
+--- a/app/src/main/java/com/andreirookie/kinosearch/di/DatabaseModule.kt	(revision ca3cfcf17ebd24f11580d4f0f83e5818dfb1b92d)
++++ b/app/src/main/java/com/andreirookie/kinosearch/di/DatabaseModule.kt	(date 1696670989723)
+@@ -9,6 +9,9 @@
+ 
+ @Module
+ object DatabaseModule {
++    /**
++     * Вот тут просто сделай скоуп и логику создания сюда перенеси
++     */
+     @Provides
+     fun provideDatabase(context: Context): AppDatabase {
+         return AppDatabase.getInstance(context)
+Index: app/src/main/java/com/andreirookie/kinosearch/data/cache/InMemoryRepository.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/andreirookie/kinosearch/data/cache/InMemoryRepository.kt b/app/src/main/java/com/andreirookie/kinosearch/data/cache/InMemoryRepository.kt
+--- a/app/src/main/java/com/andreirookie/kinosearch/data/cache/InMemoryRepository.kt	(revision ca3cfcf17ebd24f11580d4f0f83e5818dfb1b92d)
++++ b/app/src/main/java/com/andreirookie/kinosearch/data/cache/InMemoryRepository.kt	(date 1696670040642)
+@@ -10,6 +10,12 @@
+     suspend fun getFavFilms(): List<FilmFeedModel>
+ }
+ 
++/**
++ * Почему-то не используются параметры конструтора
++ *
++ * Репозиторий не должен регламентировать где данные хранятся. И стейта у него быть не должно.
++ * Репозиторий умеет получать/сохранять/удалять данные из различных источников данных
++ */
+ class InMemoryRepositoryImpl @Inject constructor(
+     private val dbRepository: DbRepository,
+     private val coroutineScope: CoroutineScope
+Index: app/src/main/java/com/andreirookie/kinosearch/data/net/NetworkRepository.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/andreirookie/kinosearch/data/net/NetworkRepository.kt b/app/src/main/java/com/andreirookie/kinosearch/data/net/NetworkRepository.kt
+--- a/app/src/main/java/com/andreirookie/kinosearch/data/net/NetworkRepository.kt	(revision ca3cfcf17ebd24f11580d4f0f83e5818dfb1b92d)
++++ b/app/src/main/java/com/andreirookie/kinosearch/data/net/NetworkRepository.kt	(date 1696670688196)
+@@ -34,6 +34,9 @@
+         }
+     }
+ 
++    /**
++     * Можно убрать withcontext
++     */
+     override suspend fun loadFilmById(filmId: Int): FilmDetailsModel {
+         return withContext(dispatcherIo) {
+             service.getFilmById(filmId).let {
+Index: app/src/main/java/com/andreirookie/kinosearch/domain/search/SearchUseCase.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/andreirookie/kinosearch/domain/search/SearchUseCase.kt b/app/src/main/java/com/andreirookie/kinosearch/domain/search/SearchUseCase.kt
+--- a/app/src/main/java/com/andreirookie/kinosearch/domain/search/SearchUseCase.kt	(revision ca3cfcf17ebd24f11580d4f0f83e5818dfb1b92d)
++++ b/app/src/main/java/com/andreirookie/kinosearch/domain/search/SearchUseCase.kt	(date 1696670989725)
+@@ -9,6 +9,9 @@
+     private val networkRepo: NetworkRepository
+ ) {
+     suspend operator fun invoke(query: String): SearchResult {
++        /**
++         * Можно убрать
++         */
+         return withContext(Dispatchers.Default) {
+             doNetSearch(query)
+         }
+Index: app/src/main/java/com/andreirookie/kinosearch/data/db/DbRepository.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/andreirookie/kinosearch/data/db/DbRepository.kt b/app/src/main/java/com/andreirookie/kinosearch/data/db/DbRepository.kt
+--- a/app/src/main/java/com/andreirookie/kinosearch/data/db/DbRepository.kt	(revision ca3cfcf17ebd24f11580d4f0f83e5818dfb1b92d)
++++ b/app/src/main/java/com/andreirookie/kinosearch/data/db/DbRepository.kt	(date 1696670688193)
+@@ -27,6 +27,16 @@
+             })
+         }
+     }
++
++    /**
++     * Чтобы поменять диспатчер эммитера нужно использовать flowOn оператор,
++     * странно что у тебя не падает исключение
++     * https://kotlinlang.org/docs/flow.html#a-common-pitfall-when-using-withcontext
++     *
++     * Ну и вообще когда работаешь с ретрофитом и румом - переключать диспатчер не нужно,
++     * они сами поддерживают саспенд функции
++     *
++     */
+     override suspend fun getFavFilms(): Flow<List<FilmFeedModel>> {
+         return flow {
+             emit(withContext(dispatcherIo) {
+Index: app/src/main/java/com/andreirookie/kinosearch/data/db/AppDatabase.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/andreirookie/kinosearch/data/db/AppDatabase.kt b/app/src/main/java/com/andreirookie/kinosearch/data/db/AppDatabase.kt
+--- a/app/src/main/java/com/andreirookie/kinosearch/data/db/AppDatabase.kt	(revision ca3cfcf17ebd24f11580d4f0f83e5818dfb1b92d)
++++ b/app/src/main/java/com/andreirookie/kinosearch/data/db/AppDatabase.kt	(date 1696670172816)
+@@ -16,6 +16,12 @@
+ 
+     abstract fun dao(): FilmDao
+ 
++    /**
++     * У тебя подключен даггер, вся логика по созданию потокобезопасных синглтонов и вообще весь
++     * менеджмент создания инстансов лучше отдать ему, так и безопаснее и удобнее.
++     *
++     * Ну и насколько я знаю object из коробки threadsafe
++     */
+     companion object {
+         private const val APP_DATABASE = "app_database.db"
+ 
+Index: app/src/main/java/com/andreirookie/kinosearch/fragments/feed/FavFragViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/andreirookie/kinosearch/fragments/feed/FavFragViewModel.kt b/app/src/main/java/com/andreirookie/kinosearch/fragments/feed/FavFragViewModel.kt
+--- a/app/src/main/java/com/andreirookie/kinosearch/fragments/feed/FavFragViewModel.kt	(revision ca3cfcf17ebd24f11580d4f0f83e5818dfb1b92d)
++++ b/app/src/main/java/com/andreirookie/kinosearch/fragments/feed/FavFragViewModel.kt	(date 1696670989719)
+@@ -21,6 +21,10 @@
+ ) : ViewModel() {
+ 
+     private val viewModelJob = SupervisorJob()
++
++    /**
++     * А почему не используешь коробочный viewModelScope?
++     */
+     private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate + viewModelJob)
+ 
+     private val _feedState = MutableStateFlow<FeedFragState>(FeedFragState.Init)
