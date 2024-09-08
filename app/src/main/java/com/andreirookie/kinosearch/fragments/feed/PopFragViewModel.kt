@@ -127,6 +127,7 @@ class PopFragViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        viewModelScope.coroutineContext.cancelChildren()
+//        viewModelScope.coroutineContext.cancelChildren()
+        viewModelJob.cancelChildren()
     }
 }
