@@ -5,7 +5,6 @@ import com.andreirookie.kinosearch.data.net.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -44,9 +43,6 @@ object NetworkModule {
     fun provideApiService(retrofit: Retrofit): ApiService {
         return retrofit.create(ApiService::class.java)
     }
-
-    @Provides
-    fun provideDispatcherIo(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
     fun provideCoroutineScope(): CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())

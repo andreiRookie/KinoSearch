@@ -1,36 +1,27 @@
 package com.andreirookie.kinosearch.data.cache
 
-import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.domain.FilmFeedModel
-import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
 interface InMemoryRepository {
     suspend fun getPopFilms(): List<FilmFeedModel>
     suspend fun getFavFilms(): List<FilmFeedModel>
+    suspend fun saveFilms(list: List<FilmFeedModel>)
 }
 
-/**
- * Почему-то не используются параметры конструтора
- *
- * Репозиторий не должен регламентировать где данные хранятся. И стейта у него быть не должно.
- * Репозиторий умеет получать/сохранять/удалять данные из различных источников данных
- */
 class InMemoryRepositoryImpl @Inject constructor(
-    private val dbRepository: DbRepository,
-    private val coroutineScope: CoroutineScope
+    private val cache: FilmsCache
 ) : InMemoryRepository {
 
-    private var popFilmList: List<FilmFeedModel> = emptyList()
-
-    private val favFilmList: List<FilmFeedModel>
-        get() = popFilmList.filter { film -> film.isLiked }
-
     override suspend fun getPopFilms(): List<FilmFeedModel> {
-        return popFilmList
+        return cache.getPopFilms()
     }
 
     override suspend fun getFavFilms(): List<FilmFeedModel> {
-        return favFilmList
+        return cache.getFavFilms()
+    }
+
+    override suspend fun saveFilms(list: List<FilmFeedModel>) {
+        cache.saveFilms(list)
     }
 }

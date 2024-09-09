@@ -2,10 +2,8 @@ package com.andreirookie.kinosearch.data.db
 
 import com.andreirookie.kinosearch.data.net.NetworkRepository
 import com.andreirookie.kinosearch.domain.FilmFeedModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 interface DbRepository {
@@ -17,48 +15,26 @@ interface DbRepository {
 
 class DbRepositoryImpl @Inject constructor(
     private val dao: FilmDao,
-    private val dispatcherIo: CoroutineDispatcher,
     private val networkRepository: NetworkRepository
 ) : DbRepository {
     override suspend fun getPopFilms(): Flow<List<FilmFeedModel>> {
-        return flow {
-            emit(withContext(dispatcherIo) {
-                dao.queryAll().map { it.asModel() }
-            })
-        }
+        return flowOf(dao.queryAll().map { it.asModel() })
     }
 
-    /**
-     * Чтобы поменять диспатчер эммитера нужно использовать flowOn оператор,
-     * странно что у тебя не падает исключение
-     * https://kotlinlang.org/docs/flow.html#a-common-pitfall-when-using-withcontext
-     *
-     * Ну и вообще когда работаешь с ретрофитом и румом - переключать диспатчер не нужно,
-     * они сами поддерживают саспенд функции
-     *
-     */
     override suspend fun getFavFilms(): Flow<List<FilmFeedModel>> {
-        return flow {
-            emit(withContext(dispatcherIo) {
-                dao.queryAllFavorites().map { it.asModel() }
-            })
-        }
+        return flowOf(dao.queryAllFavorites().map { it.asModel() })
     }
 
     override suspend fun requestAndSaveAllByPage(page: Int) {
-        withContext(dispatcherIo) {
-            val popFilms = networkRepository.loadPopularFilmsByPage(page)
-            if (popFilms.isNotEmpty()) {
-                dao.insertAll(popFilms.asEntityList())
-            }
+        val popFilms = networkRepository.loadPopularFilmsByPage(page)
+        if (popFilms.isNotEmpty()) {
+            dao.insertAll(popFilms.asEntityList())
         }
     }
 
     override suspend fun likeFilm(film: FilmFeedModel) {
-        withContext(dispatcherIo) {
-            dao.insert(film.asEntity())
-            dao.likeFilmById(film.id)
-        }
+        dao.insert(film.asEntity())
+        dao.likeFilmById(film.id)
     }
 
     private fun List<FilmFeedModel>.asEntityList(): List<FilmFeedEntity> {

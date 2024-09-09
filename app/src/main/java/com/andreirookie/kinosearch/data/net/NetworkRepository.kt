@@ -7,8 +7,6 @@ import com.andreirookie.kinosearch.data.models.StaffNetModel
 import com.andreirookie.kinosearch.domain.FilmDetailsModel
 import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.andreirookie.kinosearch.domain.Staff
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface NetworkRepository {
@@ -20,7 +18,6 @@ interface NetworkRepository {
 
 class NetworkRepositoryImpl @Inject constructor(
     private val service: ApiService,
-    private val dispatcherIo: CoroutineDispatcher,
     private val mapperFilms: Mapper<FilmNetModel, FilmFeedModel>,
     private val mapperFilmDetailsFeedModel: Mapper<FilmDetailsNetModel, FilmDetailsModel>,
     private val mapperFilmStaff: Mapper<StaffNetModel, Staff>
