@@ -3,8 +3,10 @@ package com.andreirookie.kinosearch.di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.andreirookie.kinosearch.data.db.DbRepository
-import com.andreirookie.kinosearch.domain.GetFilmInfoUseCase
-import com.andreirookie.kinosearch.domain.search.SearchUseCase
+import com.andreirookie.kinosearch.domain.usecase.GetFilmInfoUseCase
+import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsByPageUseCase
+import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsUseCase
+import com.andreirookie.kinosearch.domain.usecase.SearchUseCase
 import com.andreirookie.kinosearch.fragments.feed.FavFragViewModel
 import com.andreirookie.kinosearch.fragments.feed.PopFragViewModel
 import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragViewModel
@@ -27,9 +29,16 @@ object ActivityModule {
     @Provides
     fun providePopFragViewModelFactory(
         dbRepository: DbRepository,
-        searchUseCase: SearchUseCase
+        searchUseCase: SearchUseCase,
+        getPopFilmsUseCase: GetPopFilmsUseCase,
+        getPopFilmsByPageUseCase: GetPopFilmsByPageUseCase
     ): PopFragViewModelFactory {
-        return PopFragViewModelFactory(dbRepository, searchUseCase)
+        return PopFragViewModelFactory(
+            dbRepository,
+            searchUseCase,
+            getPopFilmsUseCase,
+            getPopFilmsByPageUseCase
+        )
     }
 
     @ActivityScope
@@ -45,13 +54,20 @@ object ActivityModule {
 @Suppress("UNCHECKED_CAST")
 class PopFragViewModelFactory @Inject constructor(
     private val dbRepository: DbRepository,
-    private val searchUseCase: SearchUseCase
+    private val searchUseCase: SearchUseCase,
+    private val getPopFilmsUseCase: GetPopFilmsUseCase,
+    private val getPopFilmsByPageUseCase: GetPopFilmsByPageUseCase
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
             PopFragViewModel::class.java -> {
-                PopFragViewModel(dbRepository, searchUseCase) as T
+                PopFragViewModel(
+                    dbRepository,
+                    searchUseCase,
+                    getPopFilmsUseCase,
+                    getPopFilmsByPageUseCase
+                ) as T
             }
             else -> {
                 error("Unknown $modelClass")

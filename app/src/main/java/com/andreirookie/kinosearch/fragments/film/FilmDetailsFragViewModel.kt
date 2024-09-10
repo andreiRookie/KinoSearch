@@ -2,7 +2,7 @@ package com.andreirookie.kinosearch.fragments.film
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.andreirookie.kinosearch.domain.GetFilmInfoUseCase
+import com.andreirookie.kinosearch.domain.usecase.GetFilmInfoUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

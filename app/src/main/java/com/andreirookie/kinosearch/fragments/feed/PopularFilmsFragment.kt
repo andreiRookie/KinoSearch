@@ -24,7 +24,7 @@ import com.andreirookie.kinosearch.di.PopFragViewModelFactory
 import com.andreirookie.kinosearch.di.PopularFilmsFragComponent
 import com.andreirookie.kinosearch.di.appComponent
 import com.andreirookie.kinosearch.domain.FilmFeedModel
-import com.andreirookie.kinosearch.domain.search.SearchState
+import com.andreirookie.kinosearch.domain.usecase.SearchState
 import com.andreirookie.kinosearch.fragments.film.FilmDetailsFragment
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -43,7 +43,7 @@ class PopularFilmsFragment : Fragment() {
     lateinit var vmFactory: PopFragViewModelFactory
     private val viewModel: PopFragViewModel by viewModels { vmFactory }
 
-    private lateinit var paginater: PopFilmsPaginaterImpl
+    private lateinit var paginator: PopFilmsPaginatorImpl
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -84,32 +84,34 @@ class PopularFilmsFragment : Fragment() {
 
             (recyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
-            paginater = PopFilmsPaginaterImpl(recyclerView.layoutManager as GridLayoutManager).apply {
-                setOnListener {
-                    startLoading()
-                    viewModel.requestAllByPage(nextPage)
+            paginator = PopFilmsPaginatorImpl(recyclerView.layoutManager as GridLayoutManager)
+                .apply {
+                    setOnListener { nextPage ->
+                        viewModel.requestMoreFilmsByPage(nextPage)
+                        viewModel.getPopFilms()
+
+                        stopLoading()
+                    }
                 }
-            }
-            recyclerView.addOnScrollListener(paginater)
-            viewModel.requestAllByPage(FIRST_PAGE)
+            recyclerView.addOnScrollListener(paginator)
 
             swipeRefreshLayout.apply {
                 setColorSchemeColors(view.context.getColor(R.color.blue_200))
                 setOnRefreshListener {
-                    viewModel.getPop()
+                    viewModel.getPopFilms()
                     isRefreshing = false
                 }
             }
 
             retryButton.setOnClickListener {
-                viewModel.getPop()
+                viewModel.getPopFilms()
             }
         }
 
         val searchEditText = requireActivity().findViewById<EditText>(R.id.search_edit_text)
         searchEditText.addTextChangedListener { editingText ->
             lifecycleScope.launch {
-                editingText?.let { query -> viewModel.search(query.toString())}
+                editingText?.let { query -> viewModel.search(query.toString()) }
             }
         }
 
@@ -123,8 +125,19 @@ class PopularFilmsFragment : Fragment() {
 
         viewModel.searchStateFlow
             .flowWithLifecycle(lifecycle)
-            .onEach { searchState -> renderSearch(searchState)}
+            .onEach { searchState -> renderSearch(searchState) }
             .launchIn(lifecycleScope)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("!!!adapter.currentList.size  " + adapter.currentList.size)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        _adapter = null
     }
 
     private fun renderSearch(state: SearchState) {
@@ -165,28 +178,15 @@ class PopularFilmsFragment : Fragment() {
                     errorGroup.isVisible = false
                 }
                 adapter.submitList(state.data)
-                paginater.stopLoading()
             }
         }
     }
 
     private fun showToast(msg: String) {
-        Toast.makeText(this.context, msg, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.getPop()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-        _adapter = null
+        Toast.makeText(this.context, msg, Toast.LENGTH_LONG).show()
     }
 
     companion object {
         const val TAB_TAG = "Popular"
-        private const val FIRST_PAGE = 1
     }
 }

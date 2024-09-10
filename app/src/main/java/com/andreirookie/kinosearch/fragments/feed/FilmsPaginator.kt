@@ -4,18 +4,17 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 
-interface FilmsPaginater {
+interface FilmsPaginator {
     fun startLoading()
     fun stopLoading()
-    fun setOnListener(action: () -> Unit)
+    fun setOnListener(action: (page: Int) -> Unit)
 }
 
-class PopFilmsPaginaterImpl(
+class PopFilmsPaginatorImpl(
     private val layoutManager: GridLayoutManager
-) : RecyclerView.OnScrollListener(), FilmsPaginater {
+) : RecyclerView.OnScrollListener(), FilmsPaginator {
 
-    private var onLoad: (() -> Unit)? = null
-
+    private var onLoad: ((page: Int) -> Unit)? = null
     private var isLoading = false
 
     override fun stopLoading() {
@@ -26,10 +25,9 @@ class PopFilmsPaginaterImpl(
         isLoading = true
     }
 
-    var nextPage: Int = 1
-        private set
+    private var nextPage: Int = 1
 
-    override fun setOnListener(action: () -> Unit) {
+    override fun setOnListener(action: (page: Int) -> Unit) {
         onLoad = action
     }
 
@@ -40,20 +38,18 @@ class PopFilmsPaginaterImpl(
         val visibleItemCount = layoutManager.childCount
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
-        if (firstVisibleItemPosition + visibleItemCount > totalItemCount - SPAN_ITEM_COUNT_OFFSET) {
-            if (!isLoading) {
+        if (!isLoading && nextPage < MAX_PAGES_COUNT) {
 
+            if (firstVisibleItemPosition + visibleItemCount >= totalItemCount
+                && firstVisibleItemPosition >= 0) {
+                startLoading()
                 nextPage++
-
-                if (nextPage <= MAX_PAGES_COUNT) {
-                    onLoad?.invoke()
-                }
+                onLoad?.invoke(nextPage)
             }
         }
     }
 
     companion object {
-        private const val SPAN_ITEM_COUNT_OFFSET = 3
         private const val MAX_PAGES_COUNT = 10
     }
 }

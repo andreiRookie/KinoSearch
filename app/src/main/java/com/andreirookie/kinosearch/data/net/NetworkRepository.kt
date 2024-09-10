@@ -1,5 +1,6 @@
 package com.andreirookie.kinosearch.data.net
 
+import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.data.mapper.Mapper
 import com.andreirookie.kinosearch.data.models.FilmDetailsNetModel
 import com.andreirookie.kinosearch.data.models.FilmNetModel
@@ -7,6 +8,7 @@ import com.andreirookie.kinosearch.data.models.StaffNetModel
 import com.andreirookie.kinosearch.domain.FilmDetailsModel
 import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.andreirookie.kinosearch.domain.Staff
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 interface NetworkRepository {
@@ -20,13 +22,16 @@ class NetworkRepositoryImpl @Inject constructor(
     private val service: ApiService,
     private val mapperFilms: Mapper<FilmNetModel, FilmFeedModel>,
     private val mapperFilmDetailsFeedModel: Mapper<FilmDetailsNetModel, FilmDetailsModel>,
-    private val mapperFilmStaff: Mapper<StaffNetModel, Staff>
+    private val mapperFilmStaff: Mapper<StaffNetModel, Staff>,
+    private val dbRepository: DbRepository
 ) : NetworkRepository {
 
     override suspend fun loadPopularFilmsByPage(page: Int): List<FilmFeedModel> {
-        return service.getTopFilmsByPages(page).let { response ->
+        val list = service.getTopFilmsByPages(page).let { response ->
             mapperFilms.mapFromEntityList(response.films)
         }
+        dbRepository.insertAll(list)
+        return list
     }
 
     override suspend fun loadFilmById(filmId: Int): FilmDetailsModel {

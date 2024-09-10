@@ -3,8 +3,10 @@ package com.andreirookie.kinosearch.fragments.feed
 import androidx.lifecycle.ViewModel
 import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.domain.FilmFeedModel
-import com.andreirookie.kinosearch.domain.search.SearchState
-import com.andreirookie.kinosearch.domain.search.SearchUseCase
+import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsByPageUseCase
+import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsUseCase
+import com.andreirookie.kinosearch.domain.usecase.SearchState
+import com.andreirookie.kinosearch.domain.usecase.SearchUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,9 +29,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
+
 class PopFragViewModel(
     private val dbRepository: DbRepository,
-    private val searchUseCase: SearchUseCase
+    private val searchUseCase: SearchUseCase,
+    private val getPopFilmsUseCase: GetPopFilmsUseCase,
+    private val getPopFilmsByPageUseCase: GetPopFilmsByPageUseCase
 ) : ViewModel() {
 
     private val viewModelJob = SupervisorJob()
@@ -44,6 +49,7 @@ class PopFragViewModel(
     val searchStateFlow: StateFlow<SearchState> get() = _searchStateFlow.asStateFlow()
 
     init {
+        getPopFilms()
         subscribeToSearchFlow()
     }
 
@@ -81,13 +87,12 @@ class PopFragViewModel(
         return result.await()
     }
 
-    fun getPop() {
+    fun getPopFilms() {
         _feedState.value = FilmFeedState.Loading()
         viewModelScope.launch {
             try {
-                dbRepository.getPopFilms().collect { list ->
-                    _feedState.value = FilmFeedState.Data(list)
-                }
+                _feedState.value = FilmFeedState.Data(getPopFilmsUseCase())
+
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -96,15 +101,12 @@ class PopFragViewModel(
         }
     }
 
-    fun requestAllByPage(page: Int) {
+    fun requestMoreFilmsByPage(page: Int) {
         _feedState.value = FilmFeedState.Loading()
         viewModelScope.launch {
             try {
-                dbRepository.requestAndSaveAllByPage(page)
+                _feedState.value = FilmFeedState.Data(getPopFilmsByPageUseCase(page))
 
-                dbRepository.getPopFilms().collect { list ->
-                    _feedState.value = FilmFeedState.Data(list)
-                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

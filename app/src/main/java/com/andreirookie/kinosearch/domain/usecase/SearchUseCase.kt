@@ -1,4 +1,4 @@
-package com.andreirookie.kinosearch.domain.search
+package com.andreirookie.kinosearch.domain.usecase
 
 import com.andreirookie.kinosearch.data.net.NetworkRepository
 import javax.inject.Inject

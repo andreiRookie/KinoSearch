@@ -4,6 +4,8 @@ import com.andreirookie.kinosearch.MainActivity
 import com.andreirookie.kinosearch.data.cache.InMemoryRepository
 import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.data.net.NetworkRepository
+import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsByPageUseCase
+import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsUseCase
 import dagger.Component
 import javax.inject.Scope
 
@@ -16,6 +18,8 @@ annotation class ActivityScope
 @Component(modules = [ActivityModule::class], dependencies = [AppComponent::class])
 interface ActivityComponent {
 
+    fun provideGetPopFilmsByPageUseCase(): GetPopFilmsByPageUseCase
+    fun provideGetPopFilmsUseCase(): GetPopFilmsUseCase
     fun provideInMemoryRepository(): InMemoryRepository
     fun provideNetworkRepository(): NetworkRepository
     fun provideDbRepository(): DbRepository

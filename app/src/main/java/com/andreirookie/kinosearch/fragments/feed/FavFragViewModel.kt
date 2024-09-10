@@ -27,10 +27,7 @@ class FavFragViewModel(
         _feedState.value = FilmFeedState.Loading()
         viewModelScope.launch {
             try {
-                dbRepository.getFavFilms().collect { list ->
-                    _feedState.value = FilmFeedState.Data(list)
-                }
-                _feedState.value = FilmFeedState.Init()
+                 _feedState.value = FilmFeedState.Data(dbRepository.getFavFilms())
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -43,10 +40,8 @@ class FavFragViewModel(
         viewModelScope.launch {
             try {
                 dbRepository.likeFilm(film)
+                _feedState.value = FilmFeedState.Data(dbRepository.getFavFilms())
 
-                dbRepository.getFavFilms().collect { list ->
-                    _feedState.value = FilmFeedState.Data(list)
-                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

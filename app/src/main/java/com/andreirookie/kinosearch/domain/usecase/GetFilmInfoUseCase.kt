@@ -1,15 +1,19 @@
-package com.andreirookie.kinosearch.domain
+package com.andreirookie.kinosearch.domain.usecase
 
 import com.andreirookie.kinosearch.data.net.NetworkRepository
+import com.andreirookie.kinosearch.domain.FilmInfo
+import com.andreirookie.kinosearch.domain.ProfessionKey
+import com.andreirookie.kinosearch.domain.Staff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+private const val maxDirectorsQuantity = 3
+private const val maxActorsQuantity = 6
+
 class GetFilmInfoUseCase @Inject constructor(
     private val networkRepo: NetworkRepository
 ) {
-    private val maxDirectorsQuantity = 3
-    private val maxActorsQuantity = 6
 
     suspend fun execute(filmId: Int): FilmInfo {
         return withContext(Dispatchers.Default) {
