@@ -7,6 +7,10 @@ import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsByPageUseCase
 import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsUseCase
 import com.andreirookie.kinosearch.domain.usecase.SearchState
 import com.andreirookie.kinosearch.domain.usecase.SearchUseCase
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +44,10 @@ class PopFragViewModel(
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate + viewModelJob)
 
-    private val _feedState = MutableStateFlow<FilmFeedState<List<FilmFeedModel>>>(FilmFeedState.Init())
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+
+    private val _feedState =
+        MutableStateFlow<FilmFeedState<List<FilmFeedModel>>>(FilmFeedState.Init())
     val feedState: StateFlow<FilmFeedState<List<FilmFeedModel>>> get() = _feedState.asStateFlow()
 
     private val searchQueryFlow: MutableSharedFlow<String> = MutableSharedFlow()
@@ -88,31 +95,21 @@ class PopFragViewModel(
     }
 
     fun getPopFilms() {
-        _feedState.value = FilmFeedState.Loading()
-        viewModelScope.launch {
-            try {
-                _feedState.value = FilmFeedState.Data(getPopFilmsUseCase())
-
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _feedState.value = FilmFeedState.Error(e)
-            }
-        }
+        getPopFilmsUseCase()
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { _feedState.value = FilmFeedState.Loading() }
+            .subscribeBy(
+                onSuccess = { list -> _feedState.value = FilmFeedState.Data(list) },
+                onError = { t -> _feedState.value = FilmFeedState.Error(t) }
+            )
+            .addTo(compositeDisposable)
     }
 
     fun requestMoreFilmsByPage(page: Int) {
-        _feedState.value = FilmFeedState.Loading()
-        viewModelScope.launch {
-            try {
-                _feedState.value = FilmFeedState.Data(getPopFilmsByPageUseCase(page))
-
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _feedState.value = FilmFeedState.Error(e)
-            }
-        }
+        getPopFilmsByPageUseCase(page)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
+            .addTo(compositeDisposable)
     }
 
     fun like(film: FilmFeedModel) {
@@ -129,6 +126,7 @@ class PopFragViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        compositeDisposable.clear()
 //        viewModelScope.coroutineContext.cancelChildren()
         viewModelJob.cancelChildren()
     }

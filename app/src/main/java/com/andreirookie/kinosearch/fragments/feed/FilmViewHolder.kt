@@ -1,5 +1,8 @@
 package com.andreirookie.kinosearch.fragments.feed
 
+import android.graphics.ColorFilter
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import androidx.recyclerview.widget.RecyclerView
 import com.andreirookie.kinosearch.R
 import com.andreirookie.kinosearch.databinding.FilmListItemLayoutBinding
@@ -20,6 +23,7 @@ class FilmViewHolder(
 
             Glide.with(root.context)
                 .load(film.posterUrlPreview)
+                .error(R.drawable.ic_launcher_foreground)
                 .into(filmImage)
 
             root.setOnClickListener {

@@ -1,27 +1,28 @@
 package com.andreirookie.kinosearch.data.cache
 
 import com.andreirookie.kinosearch.domain.FilmFeedModel
+import io.reactivex.rxjava3.core.Observable
 import javax.inject.Inject
 
 interface InMemoryRepository {
-    suspend fun getPopFilms(): List<FilmFeedModel>
-    suspend fun getFavFilms(): List<FilmFeedModel>
-    suspend fun saveFilms(list: List<FilmFeedModel>)
+    fun getPopFilms(): Observable<List<FilmFeedModel>>
+    fun getFavFilms(): List<FilmFeedModel>
+    fun saveFilms(list: List<FilmFeedModel>)
 }
 
 class InMemoryRepositoryImpl @Inject constructor(
     private val cache: FilmsCache
 ) : InMemoryRepository {
 
-    override suspend fun getPopFilms(): List<FilmFeedModel> {
-        return cache.getPopFilms()
+    override  fun getPopFilms(): Observable<List<FilmFeedModel>> {
+        return Observable.fromCallable { cache.getPopFilms() }
     }
 
-    override suspend fun getFavFilms(): List<FilmFeedModel> {
+    override fun getFavFilms(): List<FilmFeedModel> {
         return cache.getFavFilms()
     }
 
-    override suspend fun saveFilms(list: List<FilmFeedModel>) {
+    override fun saveFilms(list: List<FilmFeedModel>) {
         cache.saveFilms(list)
     }
 }

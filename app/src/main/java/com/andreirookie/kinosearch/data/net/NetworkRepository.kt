@@ -8,11 +8,15 @@ import com.andreirookie.kinosearch.data.models.StaffNetModel
 import com.andreirookie.kinosearch.domain.FilmDetailsModel
 import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.andreirookie.kinosearch.domain.Staff
-import kotlinx.coroutines.delay
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+private const val API_REQUEST_INTERVAL = 200L
+
 interface NetworkRepository {
-    suspend fun loadPopularFilmsByPage(page: Int): List<FilmFeedModel>
+    fun loadPopularFilmsByPage(page: Int): Observable<List<FilmFeedModel>>
     suspend fun loadFilmById(filmId: Int): FilmDetailsModel
     suspend fun loadStaffByFilmId(id: Int): List<Staff>
     suspend fun searchFilmByKeyword(keyword: String): List<FilmFeedModel>
@@ -26,12 +30,12 @@ class NetworkRepositoryImpl @Inject constructor(
     private val dbRepository: DbRepository
 ) : NetworkRepository {
 
-    override suspend fun loadPopularFilmsByPage(page: Int): List<FilmFeedModel> {
-        val list = service.getTopFilmsByPages(page).let { response ->
-            mapperFilms.mapFromEntityList(response.films)
-        }
-        dbRepository.insertAll(list)
-        return list
+    override fun loadPopularFilmsByPage(page: Int): Observable<List<FilmFeedModel>> {
+        return service.getTopFilmsByPages(page)
+            .delay(API_REQUEST_INTERVAL, TimeUnit.MILLISECONDS)
+            .map { response -> mapperFilms.mapFromEntityList(response.films) }
+            .doOnNext { list -> dbRepository.insertAll(list) }
+            .subscribeOn(Schedulers.io())
     }
 
     override suspend fun loadFilmById(filmId: Int): FilmDetailsModel {

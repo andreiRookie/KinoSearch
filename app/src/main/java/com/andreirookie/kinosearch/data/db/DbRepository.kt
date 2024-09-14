@@ -2,25 +2,24 @@ package com.andreirookie.kinosearch.data.db
 
 import com.andreirookie.kinosearch.data.cache.InMemoryRepository
 import com.andreirookie.kinosearch.domain.FilmFeedModel
+import io.reactivex.rxjava3.core.Observable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 interface DbRepository {
-    suspend fun getPopFilms(): List<FilmFeedModel>
+    fun getPopFilms(): Observable<List<FilmFeedModel>>
     suspend fun getFavFilms(): List<FilmFeedModel>
     suspend fun likeFilm(film: FilmFeedModel)
-    suspend fun insertAll(list: List<FilmFeedModel>)
+    fun insertAll(list: List<FilmFeedModel>)
 }
 
 class DbRepositoryImpl @Inject constructor(
     private val dao: FilmDao,
     private val inMemoryRepository: InMemoryRepository
 ) : DbRepository {
-    override suspend fun getPopFilms(): List<FilmFeedModel> {
-        return withContext(Dispatchers.IO) {
-            dao.queryAll().map { it.asModel() }
-        }
+    override fun getPopFilms(): Observable<List<FilmFeedModel>> {
+        return Observable.fromCallable { dao.queryAll().map { it.asModel() } }
     }
 
     override suspend fun getFavFilms(): List<FilmFeedModel> {
@@ -29,13 +28,13 @@ class DbRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun insertAll(list: List<FilmFeedModel>) {
-        withContext(Dispatchers.IO) {
+    override fun insertAll(list: List<FilmFeedModel>) {
+
             if (list.isNotEmpty()) {
                 dao.insertAll(list.asEntityList())
                 inMemoryRepository.saveFilms(list)
             }
-        }
+
     }
 
     override suspend fun likeFilm(film: FilmFeedModel) {

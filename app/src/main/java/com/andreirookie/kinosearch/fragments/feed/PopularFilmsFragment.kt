@@ -2,6 +2,7 @@ package com.andreirookie.kinosearch.fragments.feed
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -170,7 +171,8 @@ class PopularFilmsFragment : Fragment() {
                     progressBar.isVisible = false
                     errorGroup.isVisible = true
                 }
-                showToast(state.ex.toString())
+                Log.d(TAB_TAG, state.ex.localizedMessage ?: "Error")
+                showToast(state.ex.localizedMessage ?: "Error")
             }
             is FilmFeedState.Data -> {
                 binding.apply {

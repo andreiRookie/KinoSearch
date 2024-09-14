@@ -1,20 +1,17 @@
 package com.andreirookie.kinosearch.domain.usecase
 
+
 import com.andreirookie.kinosearch.data.cache.InMemoryRepository
 import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.data.net.NetworkRepository
 import com.andreirookie.kinosearch.domain.FilmFeedModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.flowOn
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 
 interface GetPopFilmsUseCase {
-    suspend operator fun invoke(): List<FilmFeedModel>
+    operator fun invoke(): Single<List<FilmFeedModel>>
 }
 
 private const val FIRST_PAGE = 1
@@ -25,19 +22,14 @@ class GetPopFilmsUseCaseImpl @Inject constructor(
     private val networkRepository: NetworkRepository
 ) : GetPopFilmsUseCase {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend operator fun invoke(): List<FilmFeedModel> {
-        return flow {
-            emit(inMemoryRepository.getPopFilms())
-            emit(dbRepository.getPopFilms())
-            emit(networkRepository.loadPopularFilmsByPage(FIRST_PAGE))
-        }
-            .flatMapConcat {
-                flowOf(it)
-            }
-            .flowOn(Dispatchers.IO)
-//            .filterNot { it.isEmpty() }
-            .first { it.isNotEmpty() }
-            .toList()
+    override operator fun invoke(): Single<List<FilmFeedModel>> {
+        val cacheList = inMemoryRepository.getPopFilms()
+        val dbList = dbRepository.getPopFilms()
+        val networkList = networkRepository.loadPopularFilmsByPage(FIRST_PAGE)
+
+        return Observable.concat(cacheList, dbList, networkList)
+            .filter { list -> list.isNotEmpty() }
+            .first(emptyList())
+            .subscribeOn(Schedulers.io())
     }
 }

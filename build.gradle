@@ -14,8 +14,9 @@ buildscript {
             'room': '2.5.2',
             'coroutines': '1.7.3',
             'rxJava': '2.2.21',
-            'rxAndroid': '2.1.1',
-            'rxKotlin': '2.4.0'
+            'rxAndroid': '3.0.2',
+            'rxKotlin': '3.0.1',
+            'rxRetrofitAdapter': '2.11.0'
     ]
 
     ext.deps = [
@@ -43,10 +44,11 @@ buildscript {
                     'ktx': "androidx.room:room-ktx:${versions.room}"
             ],
 
-            'rx': [
-                    'java': "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
-                    'android': "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}",
-                    'kotlin': "io.reactivex.rxjava2:rxkotlin:${versions.rxKotlin}"
+            'rxjava3': [
+                    'java': "io.reactivex.rxjava3:rxjava:${versions.rxJava}",
+                    'android': "io.reactivex.rxjava3:rxandroid:${versions.rxAndroid}",
+                    'kotlin': "io.reactivex.rxjava3:rxkotlin:${versions.rxKotlin}",
+                    'retrofit': "com.squareup.retrofit2:adapter-rxjava3:${versions.rxRetrofitAdapter}"
             ],
 
             'coroutines': [

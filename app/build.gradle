@@ -91,9 +91,10 @@ dependencies {
     implementation deps.room.ktx
     kapt deps.room.compiler
 
-    implementation deps.rx.java
-    implementation deps.rx.android
-    implementation deps.rx.kotlin
+    implementation deps.rxjava3.java
+    implementation deps.rxjava3.android
+    implementation deps.rxjava3.kotlin
+    implementation deps.rxjava3.retrofit
 
     implementation deps.coroutines.core
     implementation deps.coroutines.android

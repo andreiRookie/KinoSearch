@@ -4,9 +4,9 @@ import com.andreirookie.kinosearch.domain.FilmFeedModel
 import javax.inject.Inject
 
 interface FilmsCache {
-    suspend fun getPopFilms(): List<FilmFeedModel>
-    suspend fun getFavFilms(): List<FilmFeedModel>
-    suspend fun saveFilms(list: List<FilmFeedModel>)
+    fun getPopFilms(): List<FilmFeedModel>
+    fun getFavFilms(): List<FilmFeedModel>
+    fun saveFilms(list: List<FilmFeedModel>)
 }
 
 class FilmsCacheImpl @Inject constructor() : FilmsCache {
@@ -19,11 +19,11 @@ class FilmsCacheImpl @Inject constructor() : FilmsCache {
     private val favFilmList: List<FilmFeedModel>
         get() = popFilmList.filter { film -> film.isLiked }
 
-    override suspend fun getPopFilms(): List<FilmFeedModel> = popFilmList
+    override fun getPopFilms(): List<FilmFeedModel> = popFilmList
 
-    override suspend fun getFavFilms(): List<FilmFeedModel> = favFilmList
+    override fun getFavFilms(): List<FilmFeedModel> = favFilmList
 
-    override suspend fun saveFilms(list: List<FilmFeedModel>) {
+    override fun saveFilms(list: List<FilmFeedModel>) {
         cache.addAll(list)
     }
 }
