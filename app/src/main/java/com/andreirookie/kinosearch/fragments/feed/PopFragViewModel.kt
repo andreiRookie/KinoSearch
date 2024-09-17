@@ -8,30 +8,23 @@ import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsUseCase
 import com.andreirookie.kinosearch.domain.usecase.SearchState
 import com.andreirookie.kinosearch.domain.usecase.SearchUseCase
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 
 class PopFragViewModel(
@@ -46,6 +39,9 @@ class PopFragViewModel(
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
+    private val _searchPublisherSubject = PublishSubject.create<String>()
+    val searchObserver: Observer<String> get() = _searchPublisherSubject
+
     private val _feedState =
         MutableStateFlow<FilmFeedState<List<FilmFeedModel>>>(FilmFeedState.Init())
     val feedState: StateFlow<FilmFeedState<List<FilmFeedModel>>> get() = _feedState.asStateFlow()
@@ -57,41 +53,27 @@ class PopFragViewModel(
 
     init {
         getPopFilms()
-        subscribeToSearchFlow()
+        subscribeToSearchWithUseCase()
     }
 
-    suspend fun search(query: String) {
-        searchQueryFlow.emit(query)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    private fun subscribeToSearchFlow() {
-        searchQueryFlow
-            .filter { query -> query.isNotEmpty() }
+    private fun subscribeToSearchWithUseCase() {
+        _searchPublisherSubject
+            .filter { it.isNotEmpty()  }
             .distinctUntilChanged()
-            .debounce(500L)
-            .flatMapLatest { query -> flow { emit(searchWithUseCase(query)) } }
-            .onEach { state -> _searchStateFlow.emit(state) }
-            .flowOn(Dispatchers.Default)
-            .launchIn(viewModelScope)
-    }
-
-    private suspend fun searchWithUseCase(query: String): SearchState {
-        val result = viewModelScope.async {
-            try {
-                val result = searchUseCase(query)
-                if (result.list.isNotEmpty()) {
-                    return@async SearchState.Result(result.list)
-                } else {
-                    return@async SearchState.Empty
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                return@async SearchState.Error
+            .debounce(300L, TimeUnit.MILLISECONDS)
+            .switchMapSingle { query ->
+                      searchUseCase(query)
+                          .map { result -> SearchState.Result(result.list) }
+                     .onErrorReturn { SearchState.Result(emptyList()) }
             }
-        }
-        return result.await()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { searchState ->
+                viewModelScope.launch {
+                    _searchStateFlow.emit(searchState)
+                }
+            }
+            .addTo(compositeDisposable)
     }
 
     fun getPopFilms() {

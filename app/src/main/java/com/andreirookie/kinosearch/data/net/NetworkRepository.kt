@@ -9,6 +9,7 @@ import com.andreirookie.kinosearch.domain.FilmDetailsModel
 import com.andreirookie.kinosearch.domain.FilmFeedModel
 import com.andreirookie.kinosearch.domain.Staff
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -19,7 +20,7 @@ interface NetworkRepository {
     fun loadPopularFilmsByPage(page: Int): Observable<List<FilmFeedModel>>
     suspend fun loadFilmById(filmId: Int): FilmDetailsModel
     suspend fun loadStaffByFilmId(id: Int): List<Staff>
-    suspend fun searchFilmByKeyword(keyword: String): List<FilmFeedModel>
+    fun searchFilmByKeyword(keyword: String): Single<List<FilmFeedModel>>
 }
 
 class NetworkRepositoryImpl @Inject constructor(
@@ -50,9 +51,9 @@ class NetworkRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchFilmByKeyword(keyword: String): List<FilmFeedModel> {
-        return service.searchByKeyword(keyword).let { response ->
-            mapperFilms.mapFromEntityList(response.films)
-        }
+    override fun searchFilmByKeyword(keyword: String): Single<List<FilmFeedModel>> {
+        return service.searchByKeyword(keyword)
+            .map { response -> mapperFilms.mapFromEntityList(response.films) }
+            .subscribeOn(Schedulers.io())
     }
 }
