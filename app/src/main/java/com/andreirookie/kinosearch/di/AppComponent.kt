@@ -1,11 +1,12 @@
 package com.andreirookie.kinosearch.di
 
 import android.content.Context
-import com.andreirookie.kinosearch.data.cache.InMemoryRepository
 import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.data.net.NetworkRepository
+import com.andreirookie.kinosearch.domain.usecase.GetFavFilmsUseCase
 import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsByPageUseCase
 import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsUseCase
+import com.andreirookie.kinosearch.domain.usecase.LikeFilmUseCase
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -19,9 +20,10 @@ import javax.inject.Singleton
 ])
 interface AppComponent {
 
+    fun provideLikeFilmUseCase(): LikeFilmUseCase
+    fun provideGetFavFilmsUseCase(): GetFavFilmsUseCase
     fun provideGetPopFilmsByPageUseCase(): GetPopFilmsByPageUseCase
     fun provideGetPopFilmsUseCase(): GetPopFilmsUseCase
-    fun provideInMemoryRepository(): InMemoryRepository
     fun provideNetworkRepository(): NetworkRepository
     fun provideDbRepository(): DbRepository
 

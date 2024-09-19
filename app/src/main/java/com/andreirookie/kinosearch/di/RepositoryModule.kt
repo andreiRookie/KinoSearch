@@ -1,9 +1,5 @@
 package com.andreirookie.kinosearch.di
 
-import com.andreirookie.kinosearch.data.cache.FilmsCache
-import com.andreirookie.kinosearch.data.cache.FilmsCacheImpl
-import com.andreirookie.kinosearch.data.cache.InMemoryRepository
-import com.andreirookie.kinosearch.data.cache.InMemoryRepositoryImpl
 import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.data.db.DbRepositoryImpl
 import com.andreirookie.kinosearch.data.mapper.FilmDetailsMapperImpl
@@ -21,18 +17,9 @@ import com.andreirookie.kinosearch.domain.Staff
 import dagger.Binds
 import dagger.Module
 import dagger.Reusable
-import javax.inject.Singleton
 
 @Module
 interface RepositoryModule {
-
-    @Reusable
-    @Binds
-    fun bindInMemoryRepository(impl: InMemoryRepositoryImpl): InMemoryRepository
-
-    @Singleton
-    @Binds
-    fun bindFilmsCache(impl: FilmsCacheImpl): FilmsCache
 
     @Reusable
     @Binds

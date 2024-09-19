@@ -145,6 +145,11 @@ class PopularFilmsFragment : Fragment() {
             .launchIn(lifecycleScope)
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.getPopFilms()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

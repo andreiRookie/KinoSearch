@@ -33,10 +33,11 @@ class NetworkRepositoryImpl @Inject constructor(
 
     override fun loadPopularFilmsByPage(page: Int): Observable<List<FilmFeedModel>> {
         return service.getTopFilmsByPages(page)
+            .subscribeOn(Schedulers.io())
             .delay(API_REQUEST_INTERVAL, TimeUnit.MILLISECONDS)
             .map { response -> mapperFilms.mapFromEntityList(response.films) }
+            .observeOn(Schedulers.io())
             .doOnNext { list -> dbRepository.insertAll(list) }
-            .subscribeOn(Schedulers.io())
     }
 
     override suspend fun loadFilmById(filmId: Int): FilmDetailsModel {
@@ -53,7 +54,8 @@ class NetworkRepositoryImpl @Inject constructor(
 
     override fun searchFilmByKeyword(keyword: String): Single<List<FilmFeedModel>> {
         return service.searchByKeyword(keyword)
-            .map { response -> mapperFilms.mapFromEntityList(response.films) }
             .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
+            .map { response -> mapperFilms.mapFromEntityList(response.films) }
     }
 }

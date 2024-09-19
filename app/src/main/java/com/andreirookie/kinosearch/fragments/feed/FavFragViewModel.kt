@@ -1,58 +1,51 @@
 package com.andreirookie.kinosearch.fragments.feed
 
 import androidx.lifecycle.ViewModel
-import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.domain.FilmFeedModel
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
+import com.andreirookie.kinosearch.domain.usecase.GetFavFilmsUseCase
+import com.andreirookie.kinosearch.domain.usecase.LikeFilmUseCase
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class FavFragViewModel(
-    private val dbRepository: DbRepository
+    private val getFavFilmsUseCase: GetFavFilmsUseCase,
+    private val likeFilmUseCase: LikeFilmUseCase
 ) : ViewModel() {
 
-    private val viewModelJob = SupervisorJob()
-    private val viewModelScope = CoroutineScope(Dispatchers.Main.immediate + viewModelJob)
-
-    private val _feedState = MutableStateFlow<FilmFeedState<List<FilmFeedModel>>>(FilmFeedState.Init())
+    private val _feedState =
+        MutableStateFlow<FilmFeedState<List<FilmFeedModel>>>(FilmFeedState.Init())
     val feedState: StateFlow<FilmFeedState<List<FilmFeedModel>>> get() = _feedState.asStateFlow()
 
+    private val compositeDisposable = CompositeDisposable()
+
     fun getFav() {
-        _feedState.value = FilmFeedState.Loading()
-        viewModelScope.launch {
-            try {
-                 _feedState.value = FilmFeedState.Data(dbRepository.getFavFilms())
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _feedState.value = FilmFeedState.Error(e)
-            }
-        }
+        getFavFilmsUseCase()
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { _feedState.value = FilmFeedState.Loading() }
+            .subscribe(
+                { list ->
+                    _feedState.value = FilmFeedState.Data(list)
+                },
+                { t ->
+                    _feedState.value = FilmFeedState.Error(t)
+                }
+            )
+            .addTo(compositeDisposable)
     }
 
     fun like(film: FilmFeedModel) {
-        viewModelScope.launch {
-            try {
-                dbRepository.likeFilm(film)
-                _feedState.value = FilmFeedState.Data(dbRepository.getFavFilms())
-
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _feedState.value = FilmFeedState.Error(e)
-            }
-        }
+        likeFilmUseCase.invoke(film)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
+            .addTo(compositeDisposable)
     }
 
     override fun onCleared() {
         super.onCleared()
-//        viewModelScope.coroutineContext.cancelChildren()
-        viewModelJob.cancelChildren()
+        compositeDisposable.clear()
     }
 }

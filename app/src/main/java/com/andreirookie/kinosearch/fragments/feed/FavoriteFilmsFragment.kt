@@ -61,6 +61,7 @@ class FavoriteFilmsFragment : Fragment() {
             }
             override fun onLikeIconClick(film: FilmFeedModel) {
                 viewModel.like(film)
+                viewModel.getFav()
             }
         })
 
@@ -102,6 +103,12 @@ class FavoriteFilmsFragment : Fragment() {
         viewModel.getFav()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        _adapter = null
+    }
+
     private fun render(state: FilmFeedState<List<FilmFeedModel>>) {
         when (state) {
             is FilmFeedState.Init -> {
@@ -135,12 +142,6 @@ class FavoriteFilmsFragment : Fragment() {
 
     private fun showToast(msg: String) {
         Toast.makeText(this.context, msg, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-        _adapter = null
     }
 
     companion object {

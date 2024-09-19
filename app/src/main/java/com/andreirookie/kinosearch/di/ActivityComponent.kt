@@ -1,26 +1,27 @@
 package com.andreirookie.kinosearch.di
 
 import com.andreirookie.kinosearch.MainActivity
-import com.andreirookie.kinosearch.data.cache.InMemoryRepository
 import com.andreirookie.kinosearch.data.db.DbRepository
 import com.andreirookie.kinosearch.data.net.NetworkRepository
+import com.andreirookie.kinosearch.domain.usecase.GetFavFilmsUseCase
 import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsByPageUseCase
 import com.andreirookie.kinosearch.domain.usecase.GetPopFilmsUseCase
+import com.andreirookie.kinosearch.domain.usecase.LikeFilmUseCase
 import dagger.Component
 import javax.inject.Scope
 
 
 @Scope
-//@Retention(AnnotationRetention.RUNTIME) TODO ask about
 annotation class ActivityScope
 
 @ActivityScope
 @Component(modules = [ActivityModule::class], dependencies = [AppComponent::class])
 interface ActivityComponent {
 
+    fun provideLikeFilmUseCase(): LikeFilmUseCase
+    fun provideGetFavFilmsUseCase(): GetFavFilmsUseCase
     fun provideGetPopFilmsByPageUseCase(): GetPopFilmsByPageUseCase
     fun provideGetPopFilmsUseCase(): GetPopFilmsUseCase
-    fun provideInMemoryRepository(): InMemoryRepository
     fun provideNetworkRepository(): NetworkRepository
     fun provideDbRepository(): DbRepository
 
