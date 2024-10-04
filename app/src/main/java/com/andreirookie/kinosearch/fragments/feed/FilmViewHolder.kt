@@ -1,8 +1,5 @@
 package com.andreirookie.kinosearch.fragments.feed
 
-import android.graphics.ColorFilter
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
 import androidx.recyclerview.widget.RecyclerView
 import com.andreirookie.kinosearch.R
 import com.andreirookie.kinosearch.databinding.FilmListItemLayoutBinding
@@ -38,6 +35,10 @@ class FilmViewHolder(
                 }
             }
         }
+    }
+
+    fun bindLike(isLiked: Boolean) {
+        binding.likeIcon.isChecked = isLiked
     }
 }
 

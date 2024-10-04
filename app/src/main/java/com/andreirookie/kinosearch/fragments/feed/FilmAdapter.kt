@@ -25,6 +25,20 @@ class FilmAdapter(
         holder.bindTo(film)
     }
 
+    override fun onBindViewHolder(
+        holder: FilmViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            if (payloads[0] == true) {
+                holder.bindLike(getItem(position).isLiked)
+            }
+        }
+    }
+
     override fun onViewRecycled(holder: FilmViewHolder) {
         super.onViewRecycled(holder)
         _binding = null
@@ -38,4 +52,11 @@ class FilmDiffCallback : DiffUtil.ItemCallback<FilmFeedModel>() {
     override fun areContentsTheSame(oldItem: FilmFeedModel, newItem: FilmFeedModel): Boolean {
         return oldItem == newItem
     }
+    override fun getChangePayload(oldItem: FilmFeedModel, newItem: FilmFeedModel): Any? {
+        return if (oldItem.isLiked != newItem.isLiked) true else null
+    }
 }
+
+//enum class ItemCardChangeType(val changedValue: Any?) {
+//    LIKED(changedValue = true)
+//}
