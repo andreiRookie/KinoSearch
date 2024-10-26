@@ -8,8 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-private const val maxDirectorsQuantity = 3
-private const val maxActorsQuantity = 6
+private const val MAX_DIRECTORS_QUANTITY = 3
+private const val MAX_ACTORS_QUANTITY = 6
 
 class GetFilmInfoUseCase @Inject constructor(
     private val networkRepo: NetworkRepository
@@ -29,8 +29,8 @@ class GetFilmInfoUseCase @Inject constructor(
         val directorList = staffList.filterByProfessionKey(ProfessionKey.DIRECTOR)
         val actorList = staffList.filterByProfessionKey(ProfessionKey.ACTOR)
 
-        val directorString = directorList.take(maxDirectorsQuantity).concatenateNames()
-        val actorString = actorList.take(maxActorsQuantity).concatenateNames()
+        val directorString = directorList.take(MAX_DIRECTORS_QUANTITY).concatenateNames()
+        val actorString = actorList.take(MAX_ACTORS_QUANTITY).concatenateNames()
 // todo clickable staff
         return FilmInfo(film, directorString, actorString)
     }
